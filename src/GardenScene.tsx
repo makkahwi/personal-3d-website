@@ -317,12 +317,12 @@ const SmallPool: React.FC<{ position: Vec3 }> = ({ position }) => (
   <group position={position}>
     {/* Border */}
     <mesh receiveShadow castShadow rotation={[-Math.PI / 2, 0, 0]}>
-      <ringGeometry args={[0, 3, 64, 1]} />
+      <ringGeometry args={[0, 5, 64, 1]} />
       <meshStandardMaterial color="#cfc7b5" roughness={0.9} />
     </mesh>
     {/* Water (slightly inset) */}
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-      <circleGeometry args={[2.6, 48]} />
+      <circleGeometry args={[4.5, 48]} />
       <meshStandardMaterial
         color="#5daed1"
         transparent
@@ -338,7 +338,7 @@ const SmallPool: React.FC<{ position: Vec3 }> = ({ position }) => (
 const WalkingTrack: React.FC<{ position: Vec3 }> = ({ position }) => (
   <group position={position} rotation={[-Math.PI / 2, 0, 0]}>
     <mesh receiveShadow>
-      <torusGeometry args={[3.2, 0.25, 16, 64]} />
+      <torusGeometry args={[5.2, 0.25, 16, 64]} />
       <meshStandardMaterial color="#bda781" roughness={0.95} />
     </mesh>
   </group>
@@ -397,17 +397,17 @@ const VolleyCourt: React.FC<{ position: Vec3 }> = ({ position }) => (
   <group position={position}>
     {/* Court base */}
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-      <planeGeometry args={[6, 3]} />
+      <planeGeometry args={[10, 5]} />
       <meshStandardMaterial color="#e8d6b3" roughness={0.95} />
     </mesh>
     {/* Lines */}
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-      <planeGeometry args={[6, 0.05]} />
+      <planeGeometry args={[0.05, 5]} />
       <meshStandardMaterial color="#ffffff" />
     </mesh>
     {/* Net */}
-    <mesh position={[0, 0.9, 0]} rotation={[0, 0, 0]}>
-      <planeGeometry args={[6, 1.2]} />
+    <mesh position={[0, 2, 0]} rotation={[0, 1.55, 0]}>
+      <planeGeometry args={[5, 1.2]} />
       <meshStandardMaterial color="#ffffff" transparent opacity={0.35} />
     </mesh>
   </group>
@@ -896,12 +896,14 @@ const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
         rotation={[0, Math.PI / 2, 0]}
       />
 
-      <Signpost position={[16, 0.02, 16]} />
-      {/* layout (relative to origin) */}
-      <SmallPool position={[2, 0.02, 2]} />
-      <WalkingTrack position={[2, 0.02, 2]} />
       <MotoSpot position={[5, 0, -1.25]} />
-      <VolleyCourt position={[14, 0.01, 1]} />
+      <Signpost position={[0.5, 0.02, 0.5]} />
+
+      {/* layout (relative to origin) */}
+      <SmallPool position={[12, 0.02, 12]} />
+      <WalkingTrack position={[12, 0.02, 12]} />
+      <VolleyCourt position={[12, 0.02, 2]} />
+
       {/* Projector mounted on the west wall of the zone (facing east) */}
       <WallProjector
         screenPos={[-1.55, 2, 12]}
