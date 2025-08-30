@@ -555,6 +555,10 @@ const GardenScene = (): React.ReactElement => {
       camera={{ position: [0, 12, 20], fov: 50 }}
       style={{ width: "100vw", height: "100vh" }}
       onPointerMissed={() => setSelectedId(null)}
+      onCreated={({ gl }) => {
+        gl.shadowMap.enabled = true;
+        gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      }}
     >
       {/* Lighting */}
       <ambientLight intensity={isNight ? 0.15 : 0.4} />
