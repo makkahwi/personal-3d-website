@@ -57,8 +57,250 @@ type Materials = {
 };
 
 /* =========================
+   Helpers
+========================= */
+
+// ADD: helper to make a checkerboard texture for the chess table
+const useCheckerTexture = (size: number = 512, squares = 8) => {
+  return useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const s = size / squares;
+
+    for (let y = 0; y < squares; y++) {
+      for (let x = 0; x < squares; x++) {
+        ctx.fillStyle = (x + y) % 2 === 0 ? "#f0f0f0" : "#2a2a2a";
+        ctx.fillRect(x * s, y * s, s, s);
+      }
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.anisotropy = 8;
+    return tex;
+  }, [size, squares]);
+};
+
+/* =========================
    Reusable Station
 ========================= */
+
+/** Pool: border + water plane */
+const SmallPool: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Border */}
+    <mesh receiveShadow castShadow rotation={[-Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[0, 3, 64, 1]} />
+      <meshStandardMaterial color="#cfc7b5" roughness={0.9} />
+    </mesh>
+    {/* Water (slightly inset) */}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+      <circleGeometry args={[2.6, 48]} />
+      <meshStandardMaterial
+        color="#5daed1"
+        transparent
+        opacity={0.85}
+        roughness={0.25}
+        metalness={0.05}
+      />
+    </mesh>
+  </group>
+);
+
+/** Outdoor cooking: counter + grill drum */
+const CookingStation: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Counter */}
+    <mesh castShadow receiveShadow>
+      <boxGeometry args={[3.2, 0.8, 1.4]} />
+      <meshStandardMaterial color="#8b5a2b" roughness={0.9} />
+    </mesh>
+    {/* Grill */}
+    <mesh castShadow position={[-1.1, 0.6, 0]}>
+      <cylinderGeometry args={[0.45, 0.45, 1.2, 24]} />
+      <meshStandardMaterial color="#444" roughness={0.8} metalness={0.2} />
+    </mesh>
+  </group>
+);
+
+/** Desk + monitor (coding) */
+const CodingDesk: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Desk */}
+    <mesh castShadow receiveShadow>
+      <boxGeometry args={[2.2, 0.7, 1]} />
+      <meshStandardMaterial color="#55473a" roughness={0.9} />
+    </mesh>
+    {/* Monitor */}
+    <mesh castShadow position={[0.2, 0.9, -0.25]}>
+      <boxGeometry args={[0.9, 0.55, 0.06]} />
+      <meshStandardMaterial
+        color="#1e1e1e"
+        roughness={0.6}
+        metalness={0.2}
+        emissive="#0a0a0a"
+        emissiveIntensity={0.15}
+      />
+    </mesh>
+    {/* Tower */}
+    <mesh castShadow position={[-0.9, 0.45, 0.35]}>
+      <boxGeometry args={[0.35, 0.7, 0.5]} />
+      <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
+    </mesh>
+  </group>
+);
+
+/** Walking track (مسار مشي): flattened torus */
+const WalkingTrack: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh receiveShadow>
+      <torusGeometry args={[3.2, 0.25, 16, 64]} />
+      <meshStandardMaterial color="#bda781" roughness={0.95} />
+    </mesh>
+  </group>
+);
+
+/** Motorcycle placeholder (wheels + body) near a Door */
+const MotoSpot: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Wheels */}
+    <mesh castShadow position={[-0.6, 0.4, 0]}>
+      <torusGeometry args={[0.35, 0.09, 12, 24]} />
+      <meshStandardMaterial color="#111" roughness={0.8} metalness={0.1} />
+    </mesh>
+    <mesh castShadow position={[0.7, 0.4, 0]}>
+      <torusGeometry args={[0.35, 0.09, 12, 24]} />
+      <meshStandardMaterial color="#111" roughness={0.8} metalness={0.1} />
+    </mesh>
+    {/* Body */}
+    <mesh castShadow position={[0.05, 0.8, 0]}>
+      <boxGeometry args={[1.3, 0.3, 0.4]} />
+      <meshStandardMaterial color="#a52828" roughness={0.6} />
+    </mesh>
+    <mesh castShadow position={[0.25, 0.95, 0]}>
+      <boxGeometry args={[0.5, 0.15, 0.35]} />
+      <meshStandardMaterial color="#202020" roughness={0.7} />
+    </mesh>
+  </group>
+);
+
+/** Door mounted in the wall (east wall example) */
+const WallDoor: React.FC<{ position: Vec3; rotation?: Vec3 }> = ({
+  position,
+  rotation = [0, Math.PI / 2, 0],
+}) => (
+  <group position={position} rotation={rotation}>
+    {/* Frame */}
+    <mesh castShadow>
+      <boxGeometry args={[0.12, 2.2, 1.1]} />
+      <meshStandardMaterial color="#d2c7b6" roughness={0.9} />
+    </mesh>
+    {/* Door slab */}
+    <mesh castShadow position={[0.06, 0, 0]}>
+      <boxGeometry args={[0.04, 2, 0.9]} />
+      <meshStandardMaterial color="#5e4a3a" roughness={0.9} />
+    </mesh>
+    {/* Handle */}
+    <mesh castShadow position={[0.08, 0, 0.3]}>
+      <cylinderGeometry args={[0.03, 0.03, 0.16, 12]} />
+      <meshStandardMaterial color="#c9b37a" roughness={0.5} metalness={0.6} />
+    </mesh>
+  </group>
+);
+
+/** Volleyball mini-court + net */
+const VolleyCourt: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Court base */}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[6, 3]} />
+      <meshStandardMaterial color="#e8d6b3" roughness={0.95} />
+    </mesh>
+    {/* Lines */}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+      <planeGeometry args={[6, 0.05]} />
+      <meshStandardMaterial color="#ffffff" />
+    </mesh>
+    {/* Net */}
+    <mesh position={[0, 0.9, 0]} rotation={[0, 0, 0]}>
+      <planeGeometry args={[6, 1.2]} />
+      <meshStandardMaterial color="#ffffff" transparent opacity={0.35} />
+    </mesh>
+  </group>
+);
+
+/** Chess table + two seats */
+const ChessSet: React.FC<{ position: Vec3 }> = ({ position }) => {
+  const checker = useCheckerTexture(512, 8);
+  return (
+    <group position={position}>
+      {/* Table */}
+      <mesh castShadow receiveShadow>
+        <cylinderGeometry args={[0.6, 0.6, 0.7, 24]} />
+        <meshStandardMaterial color="#6c5646" roughness={0.9} />
+      </mesh>
+      {/* Top with checkerboard */}
+      <mesh castShadow position={[0, 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.7, 48]} />
+        <meshStandardMaterial map={checker} roughness={0.8} />
+      </mesh>
+      {/* Two simple chairs */}
+      {[-0.9, 0.9].map((x, i) => (
+        <group key={i} position={[x, 0, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.4, 0.05, 0.4]} />
+            <meshStandardMaterial color="#5a4a3a" roughness={0.9} />
+          </mesh>
+          <mesh castShadow position={[0, 0.35, -0.15]}>
+            <boxGeometry args={[0.4, 0.6, 0.06]} />
+            <meshStandardMaterial color="#5a4a3a" roughness={0.9} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+};
+
+/** Wall Projector: emits a video/GIF onto the wall */
+const WallProjector: React.FC<{
+  position: Vec3; // projector device
+  screenPos: Vec3; // plane position on wall
+  screenSize?: [number, number];
+  videoSrc: string; // e.g. "/media/movies.mp4" or a GIF
+}> = ({ position, screenPos, screenSize = [3, 1.7], videoSrc }) => {
+  const video = useMemo(() => {
+    const v = document.createElement("video");
+    v.src = videoSrc;
+    v.crossOrigin = "anonymous";
+    v.loop = true;
+    v.muted = true;
+    v.playsInline = true;
+    return v;
+  }, [videoSrc]);
+
+  useEffect(() => {
+    // Autoplay (user gesture may be required in some browsers; clicking page will start it)
+    video.play().catch(() => {});
+  }, [video]);
+
+  const texture = useMemo(() => new THREE.VideoTexture(video), [video]);
+
+  return (
+    <group>
+      {/* Projector device */}
+      <mesh castShadow position={position}>
+        <boxGeometry args={[0.4, 0.25, 0.25]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
+      </mesh>
+      {/* Screen plane on wall */}
+      <mesh position={screenPos} castShadow receiveShadow>
+        <planeGeometry args={screenSize} />
+        <meshStandardMaterial map={texture} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+};
 
 const Station = ({
   id,
@@ -560,6 +802,46 @@ const Player = ({
 };
 
 /* =========================
+   Zones
+========================= */
+
+const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
+  origin = [-14, 0, -6],
+}) => {
+  // A subtle base patch so the “zone” reads as one area
+  return (
+    <group position={origin}>
+      {/* zone base */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+        position={[8, 0.005, 8]}
+      >
+        <planeGeometry args={[16, 16]} />
+        <meshStandardMaterial color="#9ab38c" roughness={1} />
+      </mesh>
+
+      {/* layout (relative to origin) */}
+      <SmallPool position={[4, 0.02, 4]} />
+      <CookingStation position={[12.5, 0.4, 3]} />
+      <CodingDesk position={[11.5, 0.45, 11]} />
+      <WalkingTrack position={[5, 0.02, 11]} />
+      <MotoSpot position={[15, 0, 7.5]} />
+      <VolleyCourt position={[8, 0.01, 14]} />
+      <ChessSet position={[3, 0, 8]} />
+
+      {/* Projector mounted on the west wall of the zone (facing east) */}
+      <WallProjector
+        position={[0.5, 1.6, 8]}
+        screenPos={[1.6, 1.6, 8]}
+        screenSize={[3.2, 1.8]}
+        videoSrc={"/media/movies.mp4"} // put a file at public/media/movies.mp4 or a GIF
+      />
+    </group>
+  );
+};
+
+/* =========================
    Main Scene
 ========================= */
 
@@ -820,6 +1102,10 @@ const GardenScene = (): React.ReactElement => {
       <GardenLamp position={[10, 0, 0]} />
       <GardenLamp position={[0, 0, -10]} />
       <GardenLamp position={[0, 0, 10]} />
+
+      <WallDoor position={[24.9, 1.1, 2]} rotation={[0, Math.PI / 2, 0]} />
+
+      <HobbiesZone origin={[-24.9, 0.01, -24.9]} />
 
       {/* Stations */}
       {STATIONS.map((s) => (
