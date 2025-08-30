@@ -86,6 +86,232 @@ const useCheckerTexture = (size: number = 512, squares = 8) => {
    Reusable Station
 ========================= */
 
+const Signpost: React.FC<{ position: [number, number, number] }> = ({
+  position,
+}) => (
+  <group position={position}>
+    {/* pole */}
+    <mesh castShadow>
+      <cylinderGeometry args={[0.07, 0.08, 5.2, 12]} />
+      <meshStandardMaterial color="#655a4a" roughness={0.9} />
+    </mesh>
+    {/* arms */}
+    {[
+      { y: 0.9, rotY: 0.0, label: "Makkah →" },
+      { y: 1.3, rotY: Math.PI / 3, label: "Malaysia →" },
+      { y: 1.7, rotY: -Math.PI / 4, label: "Jordan →" },
+    ].map((a, i) => (
+      <group key={i} rotation={[0, a.rotY, 0]} position={[0, a.y, 0]}>
+        <mesh castShadow position={[0.55, 0, 0]}>
+          <boxGeometry args={[1.2, 0.2, 0.08]} />
+          <meshStandardMaterial color="#d6c3a2" roughness={0.85} />
+        </mesh>
+        {a.label}
+      </group>
+    ))}
+  </group>
+);
+
+// Reuse Vec3 type and useCheckerTexture hook you already have
+
+/** Small sub-module: cooking area (grill + board) */
+const CookingModule: React.FC<{ offset?: [number, number, number] }> = ({
+  offset = [0, 0.45, 0],
+}) => (
+  <group position={offset}>
+    {/* Grill block */}
+    <mesh castShadow>
+      <boxGeometry args={[0.9, 0.18, 0.6]} />
+      <meshStandardMaterial color="#3b3b3b" roughness={0.7} metalness={0.2} />
+    </mesh>
+    {/* Grill lines */}
+    {[...Array(6)].map((_, i) => (
+      <mesh key={i} position={[-0.4 + i * 0.16, 0.1, 0]}>
+        <boxGeometry args={[0.04, 0.02, 0.58]} />
+        <meshStandardMaterial color="#1e1e1e" roughness={0.6} />
+      </mesh>
+    ))}
+    {/* Cutting board */}
+    <mesh position={[0.65, 0.02, 0]}>
+      <boxGeometry args={[0.6, 0.04, 0.4]} />
+      <meshStandardMaterial color="#9a6b3d" roughness={0.9} />
+    </mesh>
+  </group>
+);
+
+/** Small sub-module: chess area */
+const ChessModule: React.FC<{ offset?: [number, number, number] }> = ({
+  offset = [0, 0.46, 0],
+}) => {
+  const checker = useCheckerTexture(512, 8);
+  return (
+    <group position={offset}>
+      {/* board */}
+      <mesh castShadow>
+        <boxGeometry args={[0.9, 0.06, 0.9]} />
+        <meshStandardMaterial map={checker} roughness={0.85} />
+      </mesh>
+      {/* simple clock */}
+      <mesh castShadow position={[0, 0.18, -0.55]}>
+        <boxGeometry args={[0.24, 0.16, 0.12]} />
+        <meshStandardMaterial color="#4a4a4a" roughness={0.8} />
+      </mesh>
+    </group>
+  );
+};
+
+/** Small sub-module: PC area (monitor + tower + keyboard) */
+const PCModule: React.FC<{ offset?: [number, number, number] }> = ({
+  offset = [0, 0.5, 0],
+}) => (
+  <group position={offset}>
+    {/* monitor */}
+    <mesh castShadow position={[0, 0.18, -0.18]}>
+      <boxGeometry args={[0.9, 0.5, 0.06]} />
+      <meshStandardMaterial
+        color="#1b1b1b"
+        roughness={0.6}
+        metalness={0.2}
+        emissive="#0a0a0a"
+        emissiveIntensity={0.12}
+      />
+    </mesh>
+    {/* stand */}
+    <mesh castShadow position={[0, -0.05, -0.18]}>
+      <boxGeometry args={[0.18, 0.1, 0.18]} />
+      <meshStandardMaterial color="#2b2b2b" roughness={0.7} />
+    </mesh>
+    {/* keyboard */}
+    <mesh castShadow position={[0.05, -0.08, 0.1]}>
+      <boxGeometry args={[0.6, 0.04, 0.18]} />
+      <meshStandardMaterial color="#2c2c2c" roughness={0.8} />
+    </mesh>
+    {/* tower */}
+    <mesh castShadow position={[-0.9, 0.08, 0.28]}>
+      <boxGeometry args={[0.32, 0.6, 0.48]} />
+      <meshStandardMaterial color="#232323" roughness={0.75} />
+    </mesh>
+  </group>
+);
+
+/** Long shared table with legs + 3 zones */
+const MultiPurposeTable: React.FC<{
+  position: Vec3; // table world position (left-front corner under the top)
+  topSize?: [number, number]; // [length, depth]
+  legInset?: number; // distance of legs from edges
+  rotation?: [number, number, number];
+}> = ({ position, topSize = [6.6, 1.6], legInset = 0.25, rotation }) => {
+  const [L, D] = topSize;
+
+  // helper to place a leg at local (x,z)
+  const Leg = ({ x, z }: { x: number; z: number }) => (
+    <mesh castShadow position={[x, 0.4, z]}>
+      <boxGeometry args={[0.14, 0.8, 0.14]} />
+      <meshStandardMaterial color="#6c5646" roughness={0.9} />
+    </mesh>
+  );
+
+  // partition markers between zones
+  const Divider = ({ x }: { x: number }) => (
+    <mesh castShadow position={[x, 0.55, 0]}>
+      <boxGeometry args={[0.04, 0.2, D - 0.1]} />
+      <meshStandardMaterial color="#7a6a59" roughness={0.9} />
+    </mesh>
+  );
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* table top */}
+      <mesh castShadow receiveShadow position={[L / 2, 0.6, 0]}>
+        <boxGeometry args={[L, 0.1, D]} />
+        <meshStandardMaterial color="#7b634f" roughness={0.9} />
+      </mesh>
+
+      {/* legs */}
+      <Leg x={legInset} z={-D / 2 + legInset} />
+      <Leg x={L - legInset} z={-D / 2 + legInset} />
+      <Leg x={legInset} z={D / 2 - legInset} />
+      <Leg x={L - legInset} z={D / 2 - legInset} />
+
+      {/* modules laid out left→right: Cooking | Chess | PC */}
+      {/* cooking block centered in first third */}
+      <CookingModule offset={[L * (1 / 6), 0.6, 0]} />
+      <Divider x={L / 3} />
+
+      {/* chess block centered in second third */}
+      <ChessModule offset={[L * (3 / 6), 0.6, 0]} />
+      <Divider x={(2 * L) / 3} />
+
+      {/* pc block centered in last third */}
+      <PCModule offset={[L * (5 / 6), 0.6, 0]} />
+    </group>
+  );
+};
+
+const WoodFence: React.FC<{
+  origin: [number, number, number];
+  size: [number, number];
+  gap?: number;
+}> = ({ origin, size, gap = 2.4 }) => {
+  const [w, h] = size;
+  const [ox, oy, oz] = origin; // bottom-left of the fence area
+  const posts: React.ReactElement[] = [];
+
+  // perimeter posts
+  for (let x = 0; x <= w; x += gap) {
+    posts.push(<FencePost key={`n-${x}`} position={[ox + x, oy, oz + h]} />);
+  }
+  for (let z = 0; z <= h; z += gap) {
+    posts.push(<FencePost key={`e-${z}`} position={[ox + w, oy, oz + z]} />);
+  }
+
+  const factor = 10;
+
+  // rails (two per side)
+  return (
+    <group>
+      {posts}
+      {/* north rail */}
+      <FenceRail
+        from={[ox + factor, oy + 0.6, oz + h - factor]}
+        to={[ox + w + factor, oy + 0.6, oz + h - factor]}
+      />
+      {/* east rail */}
+      <FenceRail
+        from={[ox + w - factor, oy + 0.6, oz + factor]}
+        to={[ox + w - factor, oy + 0.6, oz + h + factor]}
+      />
+    </group>
+  );
+};
+
+const FencePost: React.FC<{ position: [number, number, number] }> = ({
+  position,
+}) => (
+  <mesh position={position} castShadow>
+    <boxGeometry args={[0.12, 1.2, 0.12]} />
+    <meshStandardMaterial color="#6a533f" roughness={0.9} />
+  </mesh>
+);
+
+const FenceRail: React.FC<{
+  from: [number, number, number];
+  to: [number, number, number];
+}> = ({ from, to }) => {
+  const start = new THREE.Vector3(...from);
+  const end = new THREE.Vector3(...to);
+  const dir = new THREE.Vector3().subVectors(end, start);
+  const len = dir.length();
+  const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+  const rotY = Math.atan2(dir.x, dir.z);
+  return (
+    <mesh position={[mid.x, mid.y, mid.z]} rotation={[0, rotY, 0]} castShadow>
+      <boxGeometry args={[len, 0.08, 0.08]} />
+      <meshStandardMaterial color="#7a5e46" roughness={0.9} />
+    </mesh>
+  );
+};
+
 /** Pool: border + water plane */
 const SmallPool: React.FC<{ position: Vec3 }> = ({ position }) => (
   <group position={position}>
@@ -104,49 +330,6 @@ const SmallPool: React.FC<{ position: Vec3 }> = ({ position }) => (
         roughness={0.25}
         metalness={0.05}
       />
-    </mesh>
-  </group>
-);
-
-/** Outdoor cooking: counter + grill drum */
-const CookingStation: React.FC<{ position: Vec3 }> = ({ position }) => (
-  <group position={position}>
-    {/* Counter */}
-    <mesh castShadow receiveShadow>
-      <boxGeometry args={[3.2, 0.8, 1.4]} />
-      <meshStandardMaterial color="#8b5a2b" roughness={0.9} />
-    </mesh>
-    {/* Grill */}
-    <mesh castShadow position={[-1.1, 0.6, 0]}>
-      <cylinderGeometry args={[0.45, 0.45, 1.2, 24]} />
-      <meshStandardMaterial color="#444" roughness={0.8} metalness={0.2} />
-    </mesh>
-  </group>
-);
-
-/** Desk + monitor (coding) */
-const CodingDesk: React.FC<{ position: Vec3 }> = ({ position }) => (
-  <group position={position}>
-    {/* Desk */}
-    <mesh castShadow receiveShadow>
-      <boxGeometry args={[2.2, 0.7, 1]} />
-      <meshStandardMaterial color="#55473a" roughness={0.9} />
-    </mesh>
-    {/* Monitor */}
-    <mesh castShadow position={[0.2, 0.9, -0.25]}>
-      <boxGeometry args={[0.9, 0.55, 0.06]} />
-      <meshStandardMaterial
-        color="#1e1e1e"
-        roughness={0.6}
-        metalness={0.2}
-        emissive="#0a0a0a"
-        emissiveIntensity={0.15}
-      />
-    </mesh>
-    {/* Tower */}
-    <mesh castShadow position={[-0.9, 0.45, 0.35]}>
-      <boxGeometry args={[0.35, 0.7, 0.5]} />
-      <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
     </mesh>
   </group>
 );
@@ -230,45 +413,18 @@ const VolleyCourt: React.FC<{ position: Vec3 }> = ({ position }) => (
   </group>
 );
 
-/** Chess table + two seats */
-const ChessSet: React.FC<{ position: Vec3 }> = ({ position }) => {
-  const checker = useCheckerTexture(512, 8);
-  return (
-    <group position={position}>
-      {/* Table */}
-      <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[0.6, 0.6, 0.7, 24]} />
-        <meshStandardMaterial color="#6c5646" roughness={0.9} />
-      </mesh>
-      {/* Top with checkerboard */}
-      <mesh castShadow position={[0, 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.7, 48]} />
-        <meshStandardMaterial map={checker} roughness={0.8} />
-      </mesh>
-      {/* Two simple chairs */}
-      {[-0.9, 0.9].map((x, i) => (
-        <group key={i} position={[x, 0, 0]}>
-          <mesh castShadow>
-            <boxGeometry args={[0.4, 0.05, 0.4]} />
-            <meshStandardMaterial color="#5a4a3a" roughness={0.9} />
-          </mesh>
-          <mesh castShadow position={[0, 0.35, -0.15]}>
-            <boxGeometry args={[0.4, 0.6, 0.06]} />
-            <meshStandardMaterial color="#5a4a3a" roughness={0.9} />
-          </mesh>
-        </group>
-      ))}
-    </group>
-  );
-};
-
 /** Wall Projector: emits a video/GIF onto the wall */
 const WallProjector: React.FC<{
-  position: Vec3; // projector device
-  screenPos: Vec3; // plane position on wall
+  screenPos: [number, number, number]; // plane position on wall
   screenSize?: [number, number];
-  videoSrc: string; // e.g. "/media/movies.mp4" or a GIF
-}> = ({ position, screenPos, screenSize = [3, 1.7], videoSrc }) => {
+  videoSrc: string;
+  screenRotation?: [number, number, number]; // NEW
+}> = ({
+  screenPos,
+  screenSize = [3, 1.7],
+  videoSrc,
+  screenRotation = [0, 0, 0],
+}) => {
   const video = useMemo(() => {
     const v = document.createElement("video");
     v.src = videoSrc;
@@ -288,13 +444,17 @@ const WallProjector: React.FC<{
 
   return (
     <group>
-      {/* Projector device */}
-      <mesh castShadow position={position}>
+      <mesh castShadow position={[2, 0.75, 12]}>
         <boxGeometry args={[0.4, 0.25, 0.25]} />
         <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
       </mesh>
-      {/* Screen plane on wall */}
-      <mesh position={screenPos} castShadow receiveShadow>
+      {/* mount on wall */}
+      <mesh
+        position={screenPos}
+        rotation={screenRotation}
+        castShadow
+        receiveShadow
+      >
         <planeGeometry args={screenSize} />
         <meshStandardMaterial map={texture} toneMapped={false} />
       </mesh>
@@ -518,109 +678,6 @@ const GardenLamp = ({ position }: { position: [number, number, number] }) => {
 };
 
 /* =========================
-   Scene Content (data)
-========================= */
-
-const STATIONS: StationDef[] = [
-  {
-    id: "pond",
-    pos: [-15, 0.5, 0],
-    label: "Swimming / Walking",
-    body: "I like swimming and long walks — quiet focus and movement. This pond anchors the active/peaceful side.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[4, 4, 1, 32]} />
-        <meshStandardMaterial {...mats.water} />
-      </mesh>
-    ),
-  },
-  {
-    id: "moto",
-    pos: [15, 1, 0],
-    label: "Travel & Motorcycling",
-    body: "Adventure and discovery. I enjoy traveling and motorcycling — curiosity, risk to learn, open roads.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2, 2, 4]} />
-        <meshStandardMaterial {...mats.red} />
-      </mesh>
-    ),
-  },
-  {
-    id: "chess",
-    pos: [0, 0.5, 15],
-    label: "Chess & Strategy",
-    body: "Thinking ahead, patterns, and strategy. Fits my interest in problem solving and mindful play.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[4, 1, 4]} />
-        <meshStandardMaterial {...mats.dark} />
-      </mesh>
-    ),
-  },
-  {
-    id: "cooking",
-    pos: [0, 0.5, -15],
-    label: "Cooking & Dishes",
-    body: "Asian • Western • Middle Eastern (Persian/Arabic/Turkish). Food as culture and creativity.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[4, 1, 2]} />
-        <meshStandardMaterial {...mats.wood} />
-      </mesh>
-    ),
-  },
-  {
-    id: "coding",
-    pos: [-8, 0.6, -8],
-    label: "Coding for Fun",
-    body: "I love tinkering — building small projects to learn. Organized physically & digitally.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2.5, 0.6, 1.6]} />
-        <meshStandardMaterial {...mats.dark} />
-      </mesh>
-    ),
-  },
-  {
-    id: "books",
-    pos: [8, 0.8, -8],
-    label: "Interests Shelf",
-    body: "Diet & health, technology, religions, entrepreneurship, and public affairs (macro-economy, sociology).",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2, 1.6, 0.6]} />
-        <meshStandardMaterial {...mats.wall} />
-      </mesh>
-    ),
-  },
-  {
-    id: "movies",
-    pos: [-8, 0.6, 8],
-    label: "Movies",
-    body: "Mystery & mind-twisters (The Commuter, Hypnotic, Now You See Me, Knives Out, Den of Thieves) + political (Vice, Irresistible).",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[3.5, 0.6, 0.2]} />
-        <meshStandardMaterial {...mats.path} />
-      </mesh>
-    ),
-  },
-  {
-    id: "roots",
-    pos: [8, 0.5, 8],
-    label: "Roots & Journey",
-    body: "Makkah → Malaysia → Jordan. Palestinian roots. Switched fields: engineering → CS; careers: finance/secretariat → design → coding.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[1.6, 1.6, 0.6, 24]} />
-        <meshStandardMaterial {...mats.path} />
-      </mesh>
-    ),
-  },
-];
-
-/* =========================
    World Pieces
 ========================= */
 
@@ -809,6 +866,10 @@ const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
   origin = [-14, 0, -6],
 }) => {
   // A subtle base patch so the “zone” reads as one area
+  const [x, y, z] = origin;
+
+  const [w, h] = [20, 20];
+
   return (
     <group position={origin}>
       {/* zone base */}
@@ -817,25 +878,36 @@ const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
         receiveShadow
         position={[8, 0.005, 8]}
       >
-        <planeGeometry args={[16, 16]} />
+        <planeGeometry args={[w, h]} />
         <meshStandardMaterial color="#9ab38c" roughness={1} />
       </mesh>
 
-      {/* layout (relative to origin) */}
-      <SmallPool position={[4, 0.02, 4]} />
-      <CookingStation position={[12.5, 0.4, 3]} />
-      <CodingDesk position={[11.5, 0.45, 11]} />
-      <WalkingTrack position={[5, 0.02, 11]} />
-      <MotoSpot position={[15, 0, 7.5]} />
-      <VolleyCourt position={[8, 0.01, 14]} />
-      <ChessSet position={[3, 0, 8]} />
+      <WoodFence origin={[-2, 0.0001, -2]} size={[w, h]} />
 
+      {/* physical lamp meshes */}
+      <GardenLamp position={[-x - 5.5, 0, -1]} />
+      <GardenLamp position={[-1, 0, y - 1]} />
+      <GardenLamp position={[-z - 5.5, 0, -z - 5.5]} />
+      <GardenLamp position={[-1, 0, -x - 5.5]} />
+
+      <MultiPurposeTable
+        position={[2, 0, 15.5]}
+        topSize={[6.6, 1.6]}
+        rotation={[0, Math.PI / 2, 0]}
+      />
+
+      <Signpost position={[16, 0.02, 16]} />
+      {/* layout (relative to origin) */}
+      <SmallPool position={[2, 0.02, 2]} />
+      <WalkingTrack position={[2, 0.02, 2]} />
+      <MotoSpot position={[5, 0, -1.25]} />
+      <VolleyCourt position={[14, 0.01, 1]} />
       {/* Projector mounted on the west wall of the zone (facing east) */}
       <WallProjector
-        position={[0.5, 1.6, 8]}
-        screenPos={[1.6, 1.6, 8]}
-        screenSize={[3.2, 1.8]}
-        videoSrc={"/media/movies.mp4"} // put a file at public/media/movies.mp4 or a GIF
+        screenPos={[-1.55, 2, 12]}
+        screenSize={[7, 3.5]}
+        videoSrc={"/media/movies.mp4"}
+        screenRotation={[0, 1.57, 0]}
       />
     </group>
   );
@@ -1097,31 +1169,10 @@ const GardenScene = (): React.ReactElement => {
       <WallSconceRow wall="east" count={4} isNight={isNight} />
       <WallSconceRow wall="west" count={4} isNight={isNight} />
 
-      {/* physical lamp meshes */}
-      <GardenLamp position={[-10, 0, 0]} />
-      <GardenLamp position={[10, 0, 0]} />
-      <GardenLamp position={[0, 0, -10]} />
-      <GardenLamp position={[0, 0, 10]} />
+      <WallDoor position={[-14.9, 1.0, -24.5]} rotation={[0, Math.PI / 2, 0]} />
 
-      <WallDoor position={[24.9, 1.1, 2]} rotation={[0, Math.PI / 2, 0]} />
+      <HobbiesZone origin={[-22.9, 0.01, -22.9]} />
 
-      <HobbiesZone origin={[-24.9, 0.01, -24.9]} />
-
-      {/* Stations */}
-      {STATIONS.map((s) => (
-        <Station
-          key={s.id}
-          id={s.id}
-          position={s.pos}
-          label={s.label}
-          body={s.body}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
-          showLabels={showLabels}
-        >
-          {s.mesh({ mats })}
-        </Station>
-      ))}
       {/* HUD */}
       <Hud />
     </Canvas>
