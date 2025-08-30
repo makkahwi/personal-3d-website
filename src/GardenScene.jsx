@@ -1,37 +1,12 @@
 import * as THREE from "three";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Html, useCursor } from "@react-three/drei";
-
-/** ---------- Helpers ---------- */
-
-/** Small hook to smoothly move a vector3 toward a target */
-function useSmoothVec3(start = [0, 0, 0]) {
-  const v = useRef(new THREE.Vector3(...start));
-  const set = (arr) => v.current.set(arr[0], arr[1], arr[2]);
-  const lerpTo = (arr, alpha = 0.15) => {
-    v.current.lerp(new THREE.Vector3(...arr), alpha);
-  };
-  return { v, set, lerpTo };
-}
-
-/** Reset camera helper */
-function ResetCameraButton({ onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "6px 10px",
-        borderRadius: 8,
-        border: "1px solid rgba(0,0,0,0.15)",
-        background: "#fff",
-        cursor: "pointer",
-      }}
-    >
-      Reset Camera
-    </button>
-  );
-}
+import {
+  OrbitControls,
+  Html,
+  useCursor,
+  PointerLockControls,
+} from "@react-three/drei";
 
 /** ---------- Reusable Station ---------- */
 function Station({
@@ -47,7 +22,7 @@ function Station({
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
 
-  // simple “bob” animation on hover
+  // subtle hover bob/scale
   const groupRef = useRef();
   const baseY = position[1];
   useFrame((state) => {
@@ -82,7 +57,6 @@ function Station({
         {children}
       </group>
 
-      {/* Floating label */}
       {showLabels && (
         <Html distanceFactor={10} position={[0, 2.2, 0]} transform>
           <div
@@ -101,7 +75,6 @@ function Station({
         </Html>
       )}
 
-      {/* Info card */}
       {isOpen && (
         <Html distanceFactor={10} position={[0, 3.2, 0]} transform>
           <div
@@ -229,7 +202,7 @@ const STATIONS = [
     id: "roots",
     pos: [8, 0.5, 8],
     label: "Roots & Journey",
-    body: "Makkah (growing up), Malaysia (grad studies & career start), Jordan (home). Palestinian roots. Switched fields: engineering → CS; careers: finance/secretariat → design → coding.",
+    body: "Makkah → Malaysia → Jordan. Palestinian roots. Switched fields: engineering → CS; careers: finance/secretariat → design → coding.",
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[1.6, 1.6, 0.6, 24]} />
@@ -308,13 +281,85 @@ function Paths({ mats }) {
   ));
 }
 
+/** ---------- First-person Player ---------- */
+function Player({ enabled, bounds = 24.2, speed = 5 }) {
+  const { camera } = useThree();
+  const keys = useRef({});
+
+  // eye height
+  useEffect(() => {
+    if (enabled) {
+      camera.position.set(0, 1.7, 18);
+      camera.lookAt(0, 1.7, 0);
+    }
+  }, [enabled, camera]);
+
+  useEffect(() => {
+    const down = (e) => (keys.current[e.code] = true);
+    const up = (e) => (keys.current[e.code] = false);
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, []);
+
+  useFrame((_, dt) => {
+    if (!enabled) return;
+
+    const dir = new THREE.Vector3();
+    const right = new THREE.Vector3();
+    const forward = new THREE.Vector3();
+
+    // camera’s forward (xz only) & right
+    camera.getWorldDirection(forward);
+    forward.y = 0;
+    forward.normalize();
+    right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+
+    if (keys.current["KeyW"]) dir.add(forward);
+    if (keys.current["KeyS"]) dir.sub(forward);
+    if (keys.current["KeyA"]) dir.sub(right);
+    if (keys.current["KeyD"]) dir.add(right);
+
+    if (dir.lengthSq() > 0) {
+      dir.normalize();
+      camera.position.addScaledVector(dir, speed * dt);
+    }
+
+    // simple wall clamp so you can’t leave the courtyard
+    camera.position.x = THREE.MathUtils.clamp(
+      camera.position.x,
+      -bounds,
+      bounds
+    );
+    camera.position.z = THREE.MathUtils.clamp(
+      camera.position.z,
+      -bounds,
+      bounds
+    );
+
+    // avoid tree trunk (simple circular exclusion at center radius ~2)
+    const r = Math.hypot(camera.position.x, camera.position.z);
+    const minR = 2.0;
+    if (r < minR) {
+      const scale = minR / (r || 0.0001);
+      camera.position.x *= scale;
+      camera.position.z *= scale;
+    }
+  });
+
+  return enabled ? <PointerLockControls selector="#click-to-lock" /> : null;
+}
+
 /** ---------- Main ---------- */
 export default function GardenScene() {
   const [selectedId, setSelectedId] = useState(null);
   const [isNight, setIsNight] = useState(false);
   const [showLabels, setShowLabels] = useState(true);
+  const [walkMode, setWalkMode] = useState(false);
 
-  // Materials (centralized)
   const mats = useMemo(
     () => ({
       grass: new THREE.MeshStandardMaterial({ color: "#7c9c6e", roughness: 1 }),
@@ -351,13 +396,12 @@ export default function GardenScene() {
     []
   );
 
-  // HUD overlay (outside Canvas), but we keep it here for convenience
-  const Hud = () => {
-    // access controls & camera for reset
-    const { camera, gl } = useThree();
+  // HUD overlay
+  function Hud() {
     const controlsRef = useRef();
-    // We mount OrbitControls below with this ref
+    const { camera } = useThree();
     const resetCamera = () => {
+      setWalkMode(false);
       camera.position.set(0, 12, 20);
       camera.lookAt(0, 0, 0);
       controlsRef.current?.target.set(0, 0, 0);
@@ -365,57 +409,80 @@ export default function GardenScene() {
     };
     return (
       <>
-        <OrbitControls
-          ref={controlsRef}
-          maxPolarAngle={Math.PI / 2.2}
-          minDistance={10}
-          maxDistance={40}
-          enableDamping
-          dampingFactor={0.06}
-        />
-
+        {!walkMode && (
+          <OrbitControls
+            ref={controlsRef}
+            maxPolarAngle={Math.PI / 2.2}
+            minDistance={10}
+            maxDistance={40}
+            enableDamping
+            dampingFactor={0.06}
+          />
+        )}
         <Html fullscreen>
           <div
+            id="click-to-lock"
             style={{
               position: "fixed",
               top: "auto",
               right: "auto",
-              padding: 5,
+              padding: 10,
               display: "flex",
               gap: 8,
               zIndex: 10,
+              userSelect: "none",
             }}
           >
             <button
               onClick={() => setIsNight((v) => !v)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
-                background: "#fff",
-                cursor: "pointer",
-              }}
+              style={btnStyle}
+              title="Toggle day/night"
             >
               {isNight ? "Day Mode" : "Night Mode"}
             </button>
             <button
               onClick={() => setShowLabels((v) => !v)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
-                background: "#fff",
-                cursor: "pointer",
-              }}
+              style={btnStyle}
+              title="Show/Hide station labels"
             >
               {showLabels ? "Hide Labels" : "Show Labels"}
             </button>
-            <ResetCameraButton onClick={resetCamera} />
+            <button
+              onClick={() => setWalkMode((v) => !v)}
+              style={btnStyle}
+              title="Toggle Walk/Orbit"
+            >
+              {walkMode ? "Orbit Mode" : "Walk Mode"}
+            </button>
+            <button onClick={resetCamera} style={btnStyle} title="Reset camera">
+              Reset Camera
+            </button>
           </div>
+
+          {walkMode && (
+            <div
+              style={{
+                position: "fixed",
+                left: "auto",
+                bottom: -250,
+                padding: 15,
+                margin: 10,
+                background: "rgba(0,0,0,0.55)",
+                color: "#fff",
+                borderRadius: 8,
+                fontSize: 12,
+              }}
+            >
+              <div>
+                <b>Walk mode</b>: Click scene to lock cursor
+              </div>
+              <div>Move: W A S D — Look: Mouse — Exit: Esc</div>
+            </div>
+          )}
         </Html>
       </>
     );
-  };
+  }
 
   return (
     <Canvas
@@ -424,7 +491,7 @@ export default function GardenScene() {
       style={{ width: "100vw", height: "100vh" }}
       onPointerMissed={() => setSelectedId(null)}
     >
-      {/* Lights */}
+      {/* Lighting */}
       <ambientLight intensity={isNight ? 0.15 : 0.4} />
       <hemisphereLight
         skyColor={isNight ? "#1e2742" : "#bcd3e6"}
@@ -440,13 +507,16 @@ export default function GardenScene() {
         color={isNight ? "#c2d0ff" : "#ffffff"}
       />
 
+      {/* First-person controller (moves camera when enabled) */}
+      <Player enabled={walkMode} />
+
       {/* World */}
       <Ground mats={mats} />
       <Walls mats={mats} />
       <OliveTree mats={mats} />
       <Paths mats={mats} />
 
-      {/* Stations from data */}
+      {/* Stations */}
       {STATIONS.map((s) => (
         <Station
           key={s.id}
@@ -462,8 +532,17 @@ export default function GardenScene() {
         </Station>
       ))}
 
-      {/* HUD + Controls */}
+      {/* HUD + (Orbit controls only when not walking) */}
       <Hud />
     </Canvas>
   );
 }
+
+/** tiny inline style helper */
+const btnStyle = {
+  padding: "6px 10px",
+  borderRadius: 8,
+  border: "1px solid rgba(0,0,0,0.15)",
+  background: "#fff",
+  cursor: "pointer",
+};
