@@ -306,6 +306,21 @@ const Ground = ({ mats }: { mats: Materials }) => {
   );
 };
 
+const OuterInfiniteGround = ({ isNight }: { isNight: boolean }) => {
+  // Slightly darker/desaturated than inner grass so the courtyard still “reads” as special
+  const color = isNight ? "#0f1a10" : "#c2b280";
+  return (
+    <mesh
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -0.02, 0]} // tiny offset to avoid z-fighting with inner ground
+      receiveShadow
+    >
+      <planeGeometry args={[4000, 4000]} />
+      <meshStandardMaterial color={color} roughness={1} />
+    </mesh>
+  );
+};
+
 const Walls = ({ mats }: { mats: Materials }) => {
   const sides = ["north", "south", "east", "west"] as const;
   const positions: Record<(typeof sides)[number], Vec3> = {
@@ -473,9 +488,19 @@ const GardenScene = (): React.ReactElement => {
   const mats: Materials = useMemo(
     () => ({
       grass: { color: "#7c9c6e", roughness: 1 },
-      wall: { color: "#c4b7a6", roughness: 0.9 },
       trunk: { color: "#5a3e2b", roughness: 1 },
-      leaves: { color: "#355e3b", roughness: 0.8 },
+      leaves: {
+        color: "#355e3b",
+        roughness: 0.8,
+        emissive: "#09150b",
+        emissiveIntensity: 0.15,
+      },
+      wall: {
+        color: "#c4b7a6",
+        roughness: 0.9,
+        emissive: "#1a1713",
+        emissiveIntensity: 0.05,
+      },
       path: { color: "#c2b280", roughness: 0.9 },
       water: {
         color: "#3a8fb7",
@@ -648,6 +673,13 @@ const GardenScene = (): React.ReactElement => {
       {/* First-person controls */}
       <Player enabled={walkMode} />
       {/* World */}
+      {/* Background + atmospheric fade (optional but recommended) */}
+      <color attach="background" args={[isNight ? "#0c1222" : "#cfe7ff"]} />
+      <fog attach="fog" args={[isNight ? "#0c1222" : "#cfe7ff", 120, 800]} />
+
+      {/* Infinite outer floor */}
+      <OuterInfiniteGround isNight={isNight} />
+
       <Ground mats={mats} />
       <Walls mats={mats} />
       <OliveTree mats={mats} />
