@@ -1,59 +1,108 @@
+import * as React from "react";
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  type ThreeEvent,
+} from "@react-three/fiber";
 import {
   OrbitControls,
   Html,
   useCursor,
   PointerLockControls,
 } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
-/** ---------- Reusable Station ---------- */
-function Station({
+/* =========================
+   Types
+========================= */
+
+type Vec3 = [number, number, number];
+
+type StationDef = {
+  id: string;
+  pos: Vec3;
+  label: string;
+  body: string;
+  mesh: (args: { mats: Materials }) => React.ReactNode;
+};
+
+type StationProps = {
+  id: string;
+  position: Vec3;
+  label: string;
+  body: string;
+  selectedId: string | null;
+  setSelectedId: (id: string | null) => void;
+  showLabels: boolean;
+  children: React.ReactNode;
+};
+
+type MaterialParams = THREE.MeshStandardMaterialParameters;
+
+type Materials = {
+  grass: MaterialParams;
+  wall: MaterialParams;
+  trunk: MaterialParams;
+  leaves: MaterialParams;
+  path: MaterialParams;
+  water: MaterialParams;
+  wood: MaterialParams;
+  dark: MaterialParams;
+  red: MaterialParams;
+};
+
+/* =========================
+   Reusable Station
+========================= */
+
+const Station = ({
   id,
-  position = [0, 0, 0],
-  label = "Station",
-  body = "Details",
+  position,
+  label,
+  body,
   selectedId,
   setSelectedId,
-  showLabels = true,
+  showLabels,
   children,
-}) {
+}: StationProps) => {
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
 
-  // subtle hover bob/scale
-  const groupRef = useRef();
+  const groupRef = useRef<THREE.Group>(null);
   const baseY = position[1];
+  const isOpen = selectedId === id;
+
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
     const bob = hovered ? Math.sin(t * 3) * 0.07 : 0;
     groupRef.current.position.y = baseY + bob;
-    const s = hovered ? 1.06 : 1.0;
-    groupRef.current.scale.setScalar(
-      THREE.MathUtils.lerp(groupRef.current.scale.x, s, 0.2)
-    );
+
+    const current = groupRef.current.scale.x;
+    const target = hovered ? 1.06 : 1.0;
+    const next = THREE.MathUtils.lerp(current, target, 0.2);
+    groupRef.current.scale.set(next, next, next);
   });
 
-  const isOpen = selectedId === id;
+  const onOver = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    setHovered(true);
+  };
+  const onOut = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    setHovered(false);
+  };
+  const onClick = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    setSelectedId(isOpen ? null : id);
+  };
 
   return (
     <group position={position} ref={groupRef}>
-      <group
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setHovered(true);
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          setHovered(false);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          setSelectedId(isOpen ? null : id);
-        }}
-      >
+      <group onPointerOver={onOver} onPointerOut={onOut} onClick={onClick}>
         {children}
       </group>
 
@@ -110,10 +159,13 @@ function Station({
       )}
     </group>
   );
-}
+};
 
-/** ---------- Scene Content (data-driven) ---------- */
-const STATIONS = [
+/* =========================
+   Scene Content (data)
+========================= */
+
+const STATIONS: StationDef[] = [
   {
     id: "pond",
     pos: [-15, 0.5, 0],
@@ -122,7 +174,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[4, 4, 1, 32]} />
-        <primitive object={mats.water} attach="material" />
+        <meshStandardMaterial {...mats.water} />
       </mesh>
     ),
   },
@@ -134,7 +186,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <boxGeometry args={[2, 2, 4]} />
-        <primitive object={mats.red} attach="material" />
+        <meshStandardMaterial {...mats.red} />
       </mesh>
     ),
   },
@@ -146,7 +198,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <boxGeometry args={[4, 1, 4]} />
-        <primitive object={mats.dark} attach="material" />
+        <meshStandardMaterial {...mats.dark} />
       </mesh>
     ),
   },
@@ -158,7 +210,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <boxGeometry args={[4, 1, 2]} />
-        <primitive object={mats.wood} attach="material" />
+        <meshStandardMaterial {...mats.wood} />
       </mesh>
     ),
   },
@@ -170,7 +222,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <boxGeometry args={[2.5, 0.6, 1.6]} />
-        <primitive object={mats.dark} attach="material" />
+        <meshStandardMaterial {...mats.dark} />
       </mesh>
     ),
   },
@@ -182,7 +234,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <boxGeometry args={[2, 1.6, 0.6]} />
-        <primitive object={mats.wall} attach="material" />
+        <meshStandardMaterial {...mats.wall} />
       </mesh>
     ),
   },
@@ -194,7 +246,7 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <boxGeometry args={[3.5, 0.6, 0.2]} />
-        <primitive object={mats.path} attach="material" />
+        <meshStandardMaterial {...mats.path} />
       </mesh>
     ),
   },
@@ -206,87 +258,113 @@ const STATIONS = [
     mesh: ({ mats }) => (
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[1.6, 1.6, 0.6, 24]} />
-        <primitive object={mats.path} attach="material" />
+        <meshStandardMaterial {...mats.path} />
       </mesh>
     ),
   },
 ];
 
-/** ---------- World Pieces ---------- */
-function Ground({ mats }) {
+/* =========================
+   World Pieces
+========================= */
+
+const Ground = ({ mats }: { mats: Materials }) => {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[50, 50]} />
-      <primitive object={mats.grass} attach="material" />
+      <meshStandardMaterial {...mats.grass} />
     </mesh>
   );
-}
+};
 
-function Walls({ mats }) {
-  const sides = ["north", "south", "east", "west"];
-  const positions = {
+const Walls = ({ mats }: { mats: Materials }) => {
+  const sides = ["north", "south", "east", "west"] as const;
+  const positions: Record<(typeof sides)[number], Vec3> = {
     north: [0, 2.5, -25],
     south: [0, 2.5, 25],
     east: [25, 2.5, 0],
     west: [-25, 2.5, 0],
   };
-  const rotations = {
+  const rotations: Record<(typeof sides)[number], Vec3> = {
     north: [0, 0, 0],
     south: [0, 0, 0],
     east: [0, Math.PI / 2, 0],
     west: [0, Math.PI / 2, 0],
   };
 
-  return sides.map((side) => (
-    <mesh
-      key={side}
-      position={positions[side]}
-      rotation={rotations[side]}
-      receiveShadow
-      castShadow
-    >
-      <boxGeometry args={[50, 5, 1]} />
-      <primitive object={mats.wall} attach="material" />
-    </mesh>
-  ));
-}
+  return (
+    <>
+      {sides.map((side) => (
+        <mesh
+          key={side}
+          position={positions[side]}
+          rotation={rotations[side]}
+          receiveShadow
+          castShadow
+        >
+          <boxGeometry args={[50, 5, 1]} />
+          <meshStandardMaterial {...mats.wall} />
+        </mesh>
+      ))}
+    </>
+  );
+};
 
-function OliveTree({ mats }) {
+const OliveTree = ({ mats }: { mats: Materials }) => {
   return (
     <>
       <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.5, 0.5, 5, 16]} />
-        <primitive object={mats.trunk} attach="material" />
+        <meshStandardMaterial {...mats.trunk} />
       </mesh>
       <mesh position={[0, 5, 0]} castShadow receiveShadow>
         <sphereGeometry args={[3, 24, 24]} />
-        <primitive object={mats.leaves} attach="material" />
+        <meshStandardMaterial {...mats.leaves} />
       </mesh>
     </>
   );
-}
+};
 
-function Paths({ mats }) {
-  const positions = [
+const Paths = ({ mats }: { mats: Materials }) => {
+  const positions: Vec3[] = [
     [-10, 0.01, 0],
     [10, 0.01, 0],
     [0, 0.01, -10],
     [0, 0.01, 10],
   ];
-  return positions.map((pos, i) => (
-    <mesh key={i} position={pos} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-      <planeGeometry args={[8, 4]} />
-      <primitive object={mats.path} attach="material" />
-    </mesh>
-  ));
-}
+  return (
+    <>
+      {positions.map((pos, i) => (
+        <mesh
+          key={i}
+          position={pos}
+          rotation={[-Math.PI / 2, 0, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[8, 4]} />
+          <meshStandardMaterial {...mats.path} />
+        </mesh>
+      ))}
+    </>
+  );
+};
 
-/** ---------- First-person Player ---------- */
-function Player({ enabled, bounds = 24.2, speed = 5 }) {
+/* =========================
+   First-person Player
+========================= */
+
+const Player = ({
+  enabled,
+  bounds = 24.2,
+  speed = 5,
+}: {
+  enabled: boolean;
+  bounds?: number;
+  speed?: number;
+}) => {
   const { camera } = useThree();
-  const keys = useRef({});
+  const keys = useRef<Record<string, boolean>>({});
 
-  // eye height
   useEffect(() => {
     if (enabled) {
       camera.position.set(0, 1.7, 18);
@@ -295,8 +373,8 @@ function Player({ enabled, bounds = 24.2, speed = 5 }) {
   }, [enabled, camera]);
 
   useEffect(() => {
-    const down = (e) => (keys.current[e.code] = true);
-    const up = (e) => (keys.current[e.code] = false);
+    const down = (e: KeyboardEvent) => (keys.current[e.code] = true);
+    const up = (e: KeyboardEvent) => (keys.current[e.code] = false);
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
     return () => {
@@ -312,7 +390,6 @@ function Player({ enabled, bounds = 24.2, speed = 5 }) {
     const right = new THREE.Vector3();
     const forward = new THREE.Vector3();
 
-    // camera’s forward (xz only) & right
     camera.getWorldDirection(forward);
     forward.y = 0;
     forward.normalize();
@@ -328,7 +405,7 @@ function Player({ enabled, bounds = 24.2, speed = 5 }) {
       camera.position.addScaledVector(dir, speed * dt);
     }
 
-    // simple wall clamp so you can’t leave the courtyard
+    // keep within walls
     camera.position.x = THREE.MathUtils.clamp(
       camera.position.x,
       -bounds,
@@ -340,7 +417,7 @@ function Player({ enabled, bounds = 24.2, speed = 5 }) {
       bounds
     );
 
-    // avoid tree trunk (simple circular exclusion at center radius ~2)
+    // avoid center trunk (simple radial push)
     const r = Math.hypot(camera.position.x, camera.position.z);
     const minR = 2.0;
     if (r < minR) {
@@ -351,54 +428,42 @@ function Player({ enabled, bounds = 24.2, speed = 5 }) {
   });
 
   return enabled ? <PointerLockControls selector="#click-to-lock" /> : null;
-}
+};
 
-/** ---------- Main ---------- */
-export default function GardenScene() {
-  const [selectedId, setSelectedId] = useState(null);
+/* =========================
+   Main Scene
+========================= */
+
+const GardenScene = (): React.ReactElement => {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isNight, setIsNight] = useState(false);
   const [showLabels, setShowLabels] = useState(true);
   const [walkMode, setWalkMode] = useState(false);
 
-  const mats = useMemo(
+  // Materials as props objects to keep TSX happy & reusable
+  const mats: Materials = useMemo(
     () => ({
-      grass: new THREE.MeshStandardMaterial({ color: "#7c9c6e", roughness: 1 }),
-      wall: new THREE.MeshStandardMaterial({
-        color: "#c4b7a6",
-        roughness: 0.9,
-      }),
-      trunk: new THREE.MeshStandardMaterial({ color: "#5a3e2b", roughness: 1 }),
-      leaves: new THREE.MeshStandardMaterial({
-        color: "#355e3b",
-        roughness: 0.8,
-      }),
-      path: new THREE.MeshStandardMaterial({
-        color: "#c2b280",
-        roughness: 0.9,
-      }),
-      water: new THREE.MeshStandardMaterial({
+      grass: { color: "#7c9c6e", roughness: 1 },
+      wall: { color: "#c4b7a6", roughness: 0.9 },
+      trunk: { color: "#5a3e2b", roughness: 1 },
+      leaves: { color: "#355e3b", roughness: 0.8 },
+      path: { color: "#c2b280", roughness: 0.9 },
+      water: {
         color: "#3a8fb7",
         roughness: 0.2,
         metalness: 0.1,
         transparent: true,
         opacity: 0.8,
-      }),
-      wood: new THREE.MeshStandardMaterial({
-        color: "#8b5a2b",
-        roughness: 0.9,
-      }),
-      dark: new THREE.MeshStandardMaterial({
-        color: "#333333",
-        roughness: 0.7,
-      }),
-      red: new THREE.MeshStandardMaterial({ color: "#8b0000", roughness: 0.6 }),
+      },
+      wood: { color: "#8b5a2b", roughness: 0.9 },
+      dark: { color: "#333333", roughness: 0.7 },
+      red: { color: "#8b0000", roughness: 0.6 },
     }),
     []
   );
 
-  // HUD overlay
-  function Hud() {
-    const controlsRef = useRef();
+  const Hud = () => {
+    const controlsRef = useRef<OrbitControlsImpl | null>(null);
     const { camera } = useThree();
     const resetCamera = () => {
       setWalkMode(false);
@@ -411,7 +476,7 @@ export default function GardenScene() {
       <>
         {!walkMode && (
           <OrbitControls
-            ref={controlsRef}
+            ref={controlsRef as React.MutableRefObject<OrbitControlsImpl>}
             maxPolarAngle={Math.PI / 2.2}
             minDistance={10}
             maxDistance={40}
@@ -426,8 +491,8 @@ export default function GardenScene() {
               position: "fixed",
               top: "auto",
               right: "auto",
-              padding: 10,
               display: "flex",
+              padding: 10,
               gap: 8,
               zIndex: 10,
               userSelect: "none",
@@ -464,9 +529,9 @@ export default function GardenScene() {
               style={{
                 position: "fixed",
                 left: "auto",
-                bottom: -250,
-                padding: 15,
+                bottom: "auto",
                 margin: 10,
+                padding: "8px 10px",
                 background: "rgba(0,0,0,0.55)",
                 color: "#fff",
                 borderRadius: 8,
@@ -482,7 +547,7 @@ export default function GardenScene() {
         </Html>
       </>
     );
-  }
+  };
 
   return (
     <Canvas
@@ -494,7 +559,7 @@ export default function GardenScene() {
       {/* Lighting */}
       <ambientLight intensity={isNight ? 0.15 : 0.4} />
       <hemisphereLight
-        skyColor={isNight ? "#1e2742" : "#bcd3e6"}
+        color={isNight ? "#1e2742" : "#bcd3e6"}
         groundColor={isNight ? "#2a3a2f" : "#7c9c6e"}
         intensity={isNight ? 0.15 : 0.25}
       />
@@ -507,7 +572,7 @@ export default function GardenScene() {
         color={isNight ? "#c2d0ff" : "#ffffff"}
       />
 
-      {/* First-person controller (moves camera when enabled) */}
+      {/* First-person controls */}
       <Player enabled={walkMode} />
 
       {/* World */}
@@ -532,14 +597,19 @@ export default function GardenScene() {
         </Station>
       ))}
 
-      {/* HUD + (Orbit controls only when not walking) */}
+      {/* HUD */}
       <Hud />
     </Canvas>
   );
-}
+};
 
-/** tiny inline style helper */
-const btnStyle = {
+export default GardenScene;
+
+/* =========================
+   Styles
+========================= */
+
+const btnStyle: React.CSSProperties = {
   padding: "6px 10px",
   borderRadius: 8,
   border: "1px solid rgba(0,0,0,0.15)",
