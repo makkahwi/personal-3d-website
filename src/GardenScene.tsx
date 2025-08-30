@@ -12,6 +12,8 @@ import {
   Html,
   useCursor,
   PointerLockControls,
+  Sky,
+  Stars,
 } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
@@ -560,6 +562,30 @@ const GardenScene = (): React.ReactElement => {
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
       }}
     >
+      {/* background color */}
+      <color attach="background" args={[isNight ? "#0c1222" : "#cfe7ff"]} />
+
+      {/* sky / stars */}
+      {!isNight ? (
+        <Sky
+          distance={450000}
+          sunPosition={[10, 20, 10]}
+          inclination={0.49}
+          azimuth={0.25}
+        />
+      ) : (
+        <Stars
+          radius={80}
+          depth={20}
+          count={3000}
+          factor={2}
+          saturation={0}
+          fade
+        />
+      )}
+
+      {/* <fog attach="fog" args={[isNight ? "#0c1222" : "#cfe7ff", 45, 90]} /> */}
+
       {/* Lighting */}
       <ambientLight intensity={isNight ? 0.12 : 0.35} />
 
