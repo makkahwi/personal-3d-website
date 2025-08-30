@@ -1,20 +1,14 @@
-import * as React from "react";
-import * as THREE from "three";
-import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Canvas,
-  useFrame,
-  useThree,
-  type ThreeEvent,
-} from "@react-three/fiber";
-import {
-  OrbitControls,
   Html,
-  useCursor,
+  OrbitControls,
   PointerLockControls,
   Sky,
   Stars,
 } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import * as React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
 /* =========================
@@ -22,25 +16,6 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 ========================= */
 
 type Vec3 = [number, number, number];
-
-type StationDef = {
-  id: string;
-  pos: Vec3;
-  label: string;
-  body: string;
-  mesh: (args: { mats: Materials }) => React.ReactNode;
-};
-
-type StationProps = {
-  id: string;
-  position: Vec3;
-  label: string;
-  body: string;
-  selectedId: string | null;
-  setSelectedId: (id: string | null) => void;
-  showLabels: boolean;
-  children: React.ReactNode;
-};
 
 type MaterialParams = THREE.MeshStandardMaterialParameters;
 
@@ -462,109 +437,6 @@ const WallProjector: React.FC<{
   );
 };
 
-const Station = ({
-  id,
-  position,
-  label,
-  body,
-  selectedId,
-  setSelectedId,
-  showLabels,
-  children,
-}: StationProps) => {
-  const [hovered, setHovered] = useState(false);
-  useCursor(hovered);
-
-  const groupRef = useRef<THREE.Group>(null);
-  const baseY = position[1];
-  const isOpen = selectedId === id;
-
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    const t = state.clock.getElapsedTime();
-    const bob = hovered ? Math.sin(t * 3) * 0.07 : 0;
-    groupRef.current.position.y = baseY + bob;
-
-    const current = groupRef.current.scale.x;
-    const target = hovered ? 1.06 : 1.0;
-    const next = THREE.MathUtils.lerp(current, target, 0.2);
-    groupRef.current.scale.set(next, next, next);
-  });
-
-  const onOver = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    setHovered(true);
-  };
-  const onOut = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    setHovered(false);
-  };
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    setSelectedId(isOpen ? null : id);
-  };
-
-  return (
-    <group position={position} ref={groupRef}>
-      <group onPointerOver={onOver} onPointerOut={onOut} onClick={onClick}>
-        {children}
-      </group>
-
-      {showLabels && (
-        <Html distanceFactor={10} position={[0, 2.2, 0]} transform>
-          <div
-            style={{
-              padding: "4px 8px",
-              borderRadius: 8,
-              background: "rgba(0,0,0,0.5)",
-              color: "#fff",
-              fontSize: 12,
-              whiteSpace: "nowrap",
-              backdropFilter: "blur(2px)",
-            }}
-          >
-            {label}
-          </div>
-        </Html>
-      )}
-
-      {isOpen && (
-        <Html distanceFactor={10} position={[0, 3.2, 0]} transform>
-          <div
-            style={{
-              maxWidth: 260,
-              padding: 12,
-              borderRadius: 12,
-              background: "rgba(255,255,255,0.97)",
-              color: "#222",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
-              lineHeight: 1.4,
-              fontSize: 14,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>{label}</div>
-            <div style={{ marginBottom: 10 }}>{body}</div>
-            <button
-              onClick={() => setSelectedId(null)}
-              style={{
-                border: "none",
-                background: "#2b6cb0",
-                color: "white",
-                padding: "6px 10px",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </Html>
-      )}
-    </group>
-  );
-};
-
 /** A single wall sconce: small fixture + warm point light */
 const WallSconce = ({
   position,
@@ -650,10 +522,25 @@ const WallSconceRow = ({
   return <>{items}</>;
 };
 
-const GardenLamp = ({ position }: { position: [number, number, number] }) => {
+const GardenLamp = ({
+  position,
+  isNight,
+}: {
+  position: [number, number, number];
+  isNight: boolean;
+}) => {
   // pole + bulb + point light
   return (
     <group position={position}>
+      <pointLight
+        position={[position[0], 2, position[2]]}
+        intensity={isNight ? 11 : 0}
+        distance={9}
+        decay={2}
+        color="#ffd9a1"
+        castShadow
+      />
+
       {/* pole */}
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[0.1, 0.12, 2.2, 12]} />
@@ -753,30 +640,6 @@ const OliveTree = ({ mats }: { mats: Materials }) => {
   );
 };
 
-const Paths = ({ mats }: { mats: Materials }) => {
-  const positions: Vec3[] = [
-    [-10, 0.01, 0],
-    [10, 0.01, 0],
-    [0, 0.01, -10],
-    [0, 0.01, 10],
-  ];
-  return (
-    <>
-      {positions.map((pos, i) => (
-        <mesh
-          key={i}
-          position={pos}
-          rotation={[-Math.PI / 2, 0, 0]}
-          receiveShadow
-        >
-          <planeGeometry args={[8, 4]} />
-          <meshStandardMaterial {...mats.path} />
-        </mesh>
-      ))}
-    </>
-  );
-};
-
 /* =========================
    First-person Player
 ========================= */
@@ -862,8 +725,9 @@ const Player = ({
    Zones
 ========================= */
 
-const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
+const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
   origin = [-14, 0, -6],
+  isNight = false,
 }) => {
   // A subtle base patch so the “zone” reads as one area
   const [x, y, z] = origin;
@@ -885,10 +749,10 @@ const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
       <WoodFence origin={[-2, 0.0001, -2]} size={[w, h]} />
 
       {/* physical lamp meshes */}
-      <GardenLamp position={[-x - 5.5, 0, -1]} />
-      <GardenLamp position={[-1, 0, y - 1]} />
-      <GardenLamp position={[-z - 5.5, 0, -z - 5.5]} />
-      <GardenLamp position={[-1, 0, -x - 5.5]} />
+      <GardenLamp position={[-x - 5.5, 0, -1]} isNight={isNight} />
+      <GardenLamp position={[-1, 0, y - 1]} isNight={isNight} />
+      <GardenLamp position={[-z - 5.5, 0, -z - 5.5]} isNight={isNight} />
+      <GardenLamp position={[-1, 0, -x - 5.5]} isNight={isNight} />
 
       <MultiPurposeTable
         position={[2, 0, 15.5]}
@@ -896,7 +760,7 @@ const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
         rotation={[0, Math.PI / 2, 0]}
       />
 
-      <MotoSpot position={[5, 0, -1.25]} />
+      <MotoSpot position={[1.5, 0, -1.25]} />
       <Signpost position={[0.5, 0.02, 0.5]} />
 
       {/* layout (relative to origin) */}
@@ -920,9 +784,7 @@ const HobbiesZone: React.FC<{ origin?: Vec3 }> = ({
 ========================= */
 
 const GardenScene = (): React.ReactElement => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isNight, setIsNight] = useState(false);
-  const [showLabels, setShowLabels] = useState(true);
   const [walkMode, setWalkMode] = useState(false);
 
   // Materials as props objects to keep TSX happy & reusable
@@ -1001,13 +863,6 @@ const GardenScene = (): React.ReactElement => {
               {isNight ? "Day Mode" : "Night Mode"}
             </button>
             <button
-              onClick={() => setShowLabels((v) => !v)}
-              style={btnStyle}
-              title="Show/Hide station labels"
-            >
-              {showLabels ? "Hide Labels" : "Show Labels"}
-            </button>
-            <button
               onClick={() => setWalkMode((v) => !v)}
               style={btnStyle}
               title="Toggle Walk/Orbit"
@@ -1049,7 +904,6 @@ const GardenScene = (): React.ReactElement => {
       shadows
       camera={{ position: [0, 12, 20], fov: 50 }}
       style={{ width: "100vw", height: "100vh" }}
-      onPointerMissed={() => setSelectedId(null)}
       onCreated={({ gl }) => {
         gl.shadowMap.enabled = true;
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1124,46 +978,6 @@ const GardenScene = (): React.ReactElement => {
       <Ground mats={mats} />
       <Walls mats={mats} />
       <OliveTree mats={mats} />
-      <Paths mats={mats} />
-
-      {/* garden lamps */}
-      {isNight && (
-        <>
-          {/* warm glows */}
-          <pointLight
-            position={[-10, 1.2, 0]}
-            intensity={11}
-            distance={9}
-            decay={2}
-            color="#ffd9a1"
-            castShadow
-          />
-          <pointLight
-            position={[10, 1.2, 0]}
-            intensity={11}
-            distance={9}
-            decay={2}
-            color="#ffd9a1"
-            castShadow
-          />
-          <pointLight
-            position={[0, 1.2, -10]}
-            intensity={11}
-            distance={9}
-            decay={2}
-            color="#ffd9a1"
-            castShadow
-          />
-          <pointLight
-            position={[0, 1.2, 10]}
-            intensity={11}
-            distance={9}
-            decay={2}
-            color="#ffd9a1"
-            castShadow
-          />
-        </>
-      )}
 
       {/* Evenly distributed wall sconces on all walls */}
       <WallSconceRow wall="north" count={5} isNight={isNight} />
@@ -1171,9 +985,9 @@ const GardenScene = (): React.ReactElement => {
       <WallSconceRow wall="east" count={4} isNight={isNight} />
       <WallSconceRow wall="west" count={4} isNight={isNight} />
 
-      <WallDoor position={[-14.9, 1.0, -24.5]} rotation={[0, Math.PI / 2, 0]} />
+      <WallDoor position={[-18.9, 1.0, -24.5]} rotation={[0, Math.PI / 2, 0]} />
 
-      <HobbiesZone origin={[-22.9, 0.01, -22.9]} />
+      <HobbiesZone origin={[-22.9, 0.01, -22.9]} isNight={isNight} />
 
       {/* HUD */}
       <Hud />
