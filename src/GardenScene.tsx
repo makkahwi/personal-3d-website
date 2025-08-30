@@ -776,7 +776,7 @@ const GardenScene = (): React.ReactElement => {
           {/* warm glows */}
           <pointLight
             position={[-10, 1.2, 0]}
-            intensity={1.1}
+            intensity={11}
             distance={9}
             decay={2}
             color="#ffd9a1"
@@ -784,7 +784,7 @@ const GardenScene = (): React.ReactElement => {
           />
           <pointLight
             position={[10, 1.2, 0]}
-            intensity={1.1}
+            intensity={11}
             distance={9}
             decay={2}
             color="#ffd9a1"
@@ -792,7 +792,7 @@ const GardenScene = (): React.ReactElement => {
           />
           <pointLight
             position={[0, 1.2, -10]}
-            intensity={1.1}
+            intensity={11}
             distance={9}
             decay={2}
             color="#ffd9a1"
@@ -800,7 +800,7 @@ const GardenScene = (): React.ReactElement => {
           />
           <pointLight
             position={[0, 1.2, 10]}
-            intensity={1.1}
+            intensity={11}
             distance={9}
             decay={2}
             color="#ffd9a1"
