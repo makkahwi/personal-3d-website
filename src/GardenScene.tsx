@@ -567,24 +567,37 @@ const GardenScene = (): React.ReactElement => {
         groundColor={isNight ? "#2a3a2f" : "#7c9c6e"}
         intensity={isNight ? 0.15 : 0.25}
       />
-      <directionalLight
-        position={[10, 15, 5]}
-        intensity={isNight ? 0.5 : 1.2}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        color={isNight ? "#c2d0ff" : "#ffffff"}
-      />
 
+      {!isNight ? (
+        <directionalLight
+          position={[12, 18, 8]}
+          intensity={1.2}
+          color="#fffbe8"
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-bias={-0.0005}
+          shadow-normalBias={0.02}
+        />
+      ) : (
+        <directionalLight
+          position={[-8, 12, -6]}
+          intensity={0.35}
+          color="#9db7ff"
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-bias={-0.0005}
+          shadow-normalBias={0.02}
+        />
+      )}
       {/* First-person controls */}
       <Player enabled={walkMode} />
-
       {/* World */}
       <Ground mats={mats} />
       <Walls mats={mats} />
       <OliveTree mats={mats} />
       <Paths mats={mats} />
-
       {/* Stations */}
       {STATIONS.map((s) => (
         <Station
@@ -600,7 +613,6 @@ const GardenScene = (): React.ReactElement => {
           {s.mesh({ mats })}
         </Station>
       ))}
-
       {/* HUD */}
       <Hud />
     </Canvas>
