@@ -561,11 +561,12 @@ const GardenScene = (): React.ReactElement => {
       }}
     >
       {/* Lighting */}
-      <ambientLight intensity={isNight ? 0.15 : 0.4} />
+      <ambientLight intensity={isNight ? 0.12 : 0.35} />
+
       <hemisphereLight
-        color={isNight ? "#1e2742" : "#bcd3e6"}
-        groundColor={isNight ? "#2a3a2f" : "#7c9c6e"}
-        intensity={isNight ? 0.15 : 0.25}
+        color={isNight ? "#2a3d6b" : "#cfe7ff"}
+        groundColor={isNight ? "#1f2b23" : "#8fb28a"}
+        intensity={isNight ? 0.18 : 0.25}
       />
 
       {!isNight ? (
