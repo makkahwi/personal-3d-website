@@ -46,7 +46,6 @@ const SceneControl = ({
           isNight={isNight}
           setIsNight={setIsNight}
           onReset={resetCamera}
-          // you can pass speed/setSpeed later if you wire them (see step 3)
         />
       </Html>
     </>
