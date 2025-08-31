@@ -1,44 +1,27 @@
+import { Html, OrbitControls, Sky, Stars } from "@react-three/drei";
+import { Canvas, useThree } from "@react-three/fiber";
 import * as React from "react";
-import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Canvas,
-  useFrame,
-  useThree,
-  type ThreeEvent,
-} from "@react-three/fiber";
-import {
-  OrbitControls,
-  Html,
-  useCursor,
-  PointerLockControls,
-} from "@react-three/drei";
+import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import Ground from "./components/Ground";
+import OliveTree from "./components/OliveTree";
+import OuterInfiniteGround from "./components/OuterInfiniteGround";
+import Player from "./components/Player";
+import Signpost from "./components/SignPost";
+import SwimmingPool from "./components/SwimmingPool";
+import WallDoor from "./components/WallDoor";
+import Walls from "./components/Walls";
+import WallSconceRow from "./components/WallSconceRow";
+import WoodFence from "./components/WoodFence";
+import GardenLamp from "./components/GardenLamp";
+import MultiPurposeTable from "./views/MultiPurposeTable";
 
 /* =========================
    Types
 ========================= */
 
 type Vec3 = [number, number, number];
-
-type StationDef = {
-  id: string;
-  pos: Vec3;
-  label: string;
-  body: string;
-  mesh: (args: { mats: Materials }) => React.ReactNode;
-};
-
-type StationProps = {
-  id: string;
-  position: Vec3;
-  label: string;
-  body: string;
-  selectedId: string | null;
-  setSelectedId: (id: string | null) => void;
-  showLabels: boolean;
-  children: React.ReactNode;
-};
 
 type MaterialParams = THREE.MeshStandardMaterialParameters;
 
@@ -54,380 +37,166 @@ type Materials = {
   red: MaterialParams;
 };
 
-/* =========================
-   Reusable Station
-========================= */
+/** Walking track (مسار مشي): flattened torus */
+const WalkingTrack: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh receiveShadow>
+      <torusGeometry args={[5.2, 0.25, 16, 64]} />
+      <meshStandardMaterial color="#bda781" roughness={0.95} />
+    </mesh>
+  </group>
+);
 
-const Station = ({
-  id,
-  position,
-  label,
-  body,
-  selectedId,
-  setSelectedId,
-  showLabels,
-  children,
-}: StationProps) => {
-  const [hovered, setHovered] = useState(false);
-  useCursor(hovered);
+/** Motorcycle placeholder (wheels + body) near a Door */
+const MotoSpot: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Wheels */}
+    <mesh castShadow position={[-0.6, 0.4, 0]}>
+      <torusGeometry args={[0.35, 0.09, 12, 24]} />
+      <meshStandardMaterial color="#111" roughness={0.8} metalness={0.1} />
+    </mesh>
+    <mesh castShadow position={[0.7, 0.4, 0]}>
+      <torusGeometry args={[0.35, 0.09, 12, 24]} />
+      <meshStandardMaterial color="#111" roughness={0.8} metalness={0.1} />
+    </mesh>
+    {/* Body */}
+    <mesh castShadow position={[0.05, 0.8, 0]}>
+      <boxGeometry args={[1.3, 0.3, 0.4]} />
+      <meshStandardMaterial color="#a52828" roughness={0.6} />
+    </mesh>
+    <mesh castShadow position={[0.25, 0.95, 0]}>
+      <boxGeometry args={[0.5, 0.15, 0.35]} />
+      <meshStandardMaterial color="#202020" roughness={0.7} />
+    </mesh>
+  </group>
+);
 
-  const groupRef = useRef<THREE.Group>(null);
-  const baseY = position[1];
-  const isOpen = selectedId === id;
+/** Volleyball mini-court + net */
+const VolleyCourt: React.FC<{ position: Vec3 }> = ({ position }) => (
+  <group position={position}>
+    {/* Court base */}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[10, 5]} />
+      <meshStandardMaterial color="#e8d6b3" roughness={0.95} />
+    </mesh>
+    {/* Lines */}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+      <planeGeometry args={[0.05, 5]} />
+      <meshStandardMaterial color="#ffffff" />
+    </mesh>
+    {/* Net */}
+    <mesh position={[0, 2, 0]} rotation={[0, 1.55, 0]}>
+      <planeGeometry args={[5, 1.2]} />
+      <meshStandardMaterial color="#ffffff" transparent opacity={0.35} />
+    </mesh>
+  </group>
+);
 
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    const t = state.clock.getElapsedTime();
-    const bob = hovered ? Math.sin(t * 3) * 0.07 : 0;
-    groupRef.current.position.y = baseY + bob;
+/** Wall Projector: emits a video/GIF onto the wall */
+const WallProjector: React.FC<{
+  screenPos: [number, number, number]; // plane position on wall
+  screenSize?: [number, number];
+  videoSrc: string;
+  screenRotation?: [number, number, number]; // NEW
+}> = ({
+  screenPos,
+  screenSize = [3, 1.7],
+  videoSrc,
+  screenRotation = [0, 0, 0],
+}) => {
+  const video = useMemo(() => {
+    const v = document.createElement("video");
+    v.src = videoSrc;
+    v.crossOrigin = "anonymous";
+    v.loop = true;
+    v.muted = true;
+    v.playsInline = true;
+    return v;
+  }, [videoSrc]);
 
-    const current = groupRef.current.scale.x;
-    const target = hovered ? 1.06 : 1.0;
-    const next = THREE.MathUtils.lerp(current, target, 0.2);
-    groupRef.current.scale.set(next, next, next);
-  });
+  useEffect(() => {
+    // Autoplay (user gesture may be required in some browsers; clicking page will start it)
+    video.play().catch(() => {});
+  }, [video]);
 
-  const onOver = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    setHovered(true);
-  };
-  const onOut = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    setHovered(false);
-  };
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    setSelectedId(isOpen ? null : id);
-  };
+  const texture = useMemo(() => new THREE.VideoTexture(video), [video]);
 
   return (
-    <group position={position} ref={groupRef}>
-      <group onPointerOver={onOver} onPointerOut={onOut} onClick={onClick}>
-        {children}
-      </group>
-
-      {showLabels && (
-        <Html distanceFactor={10} position={[0, 2.2, 0]} transform>
-          <div
-            style={{
-              padding: "4px 8px",
-              borderRadius: 8,
-              background: "rgba(0,0,0,0.5)",
-              color: "#fff",
-              fontSize: 12,
-              whiteSpace: "nowrap",
-              backdropFilter: "blur(2px)",
-            }}
-          >
-            {label}
-          </div>
-        </Html>
-      )}
-
-      {isOpen && (
-        <Html distanceFactor={10} position={[0, 3.2, 0]} transform>
-          <div
-            style={{
-              maxWidth: 260,
-              padding: 12,
-              borderRadius: 12,
-              background: "rgba(255,255,255,0.97)",
-              color: "#222",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
-              lineHeight: 1.4,
-              fontSize: 14,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>{label}</div>
-            <div style={{ marginBottom: 10 }}>{body}</div>
-            <button
-              onClick={() => setSelectedId(null)}
-              style={{
-                border: "none",
-                background: "#2b6cb0",
-                color: "white",
-                padding: "6px 10px",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </Html>
-      )}
+    <group>
+      <mesh castShadow position={[2, 0.75, 12]}>
+        <boxGeometry args={[0.4, 0.25, 0.25]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
+      </mesh>
+      {/* mount on wall */}
+      <mesh
+        position={screenPos}
+        rotation={screenRotation}
+        castShadow
+        receiveShadow
+      >
+        <planeGeometry args={screenSize} />
+        <meshStandardMaterial map={texture} toneMapped={false} />
+      </mesh>
     </group>
   );
 };
 
 /* =========================
-   Scene Content (data)
+   Zones
 ========================= */
 
-const STATIONS: StationDef[] = [
-  {
-    id: "pond",
-    pos: [-15, 0.5, 0],
-    label: "Swimming / Walking",
-    body: "I like swimming and long walks — quiet focus and movement. This pond anchors the active/peaceful side.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[4, 4, 1, 32]} />
-        <meshStandardMaterial {...mats.water} />
-      </mesh>
-    ),
-  },
-  {
-    id: "moto",
-    pos: [15, 1, 0],
-    label: "Travel & Motorcycling",
-    body: "Adventure and discovery. I enjoy traveling and motorcycling — curiosity, risk to learn, open roads.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2, 2, 4]} />
-        <meshStandardMaterial {...mats.red} />
-      </mesh>
-    ),
-  },
-  {
-    id: "chess",
-    pos: [0, 0.5, 15],
-    label: "Chess & Strategy",
-    body: "Thinking ahead, patterns, and strategy. Fits my interest in problem solving and mindful play.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[4, 1, 4]} />
-        <meshStandardMaterial {...mats.dark} />
-      </mesh>
-    ),
-  },
-  {
-    id: "cooking",
-    pos: [0, 0.5, -15],
-    label: "Cooking & Dishes",
-    body: "Asian • Western • Middle Eastern (Persian/Arabic/Turkish). Food as culture and creativity.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[4, 1, 2]} />
-        <meshStandardMaterial {...mats.wood} />
-      </mesh>
-    ),
-  },
-  {
-    id: "coding",
-    pos: [-8, 0.6, -8],
-    label: "Coding for Fun",
-    body: "I love tinkering — building small projects to learn. Organized physically & digitally.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2.5, 0.6, 1.6]} />
-        <meshStandardMaterial {...mats.dark} />
-      </mesh>
-    ),
-  },
-  {
-    id: "books",
-    pos: [8, 0.8, -8],
-    label: "Interests Shelf",
-    body: "Diet & health, technology, religions, entrepreneurship, and public affairs (macro-economy, sociology).",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2, 1.6, 0.6]} />
-        <meshStandardMaterial {...mats.wall} />
-      </mesh>
-    ),
-  },
-  {
-    id: "movies",
-    pos: [-8, 0.6, 8],
-    label: "Movies",
-    body: "Mystery & mind-twisters (The Commuter, Hypnotic, Now You See Me, Knives Out, Den of Thieves) + political (Vice, Irresistible).",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[3.5, 0.6, 0.2]} />
-        <meshStandardMaterial {...mats.path} />
-      </mesh>
-    ),
-  },
-  {
-    id: "roots",
-    pos: [8, 0.5, 8],
-    label: "Roots & Journey",
-    body: "Makkah → Malaysia → Jordan. Palestinian roots. Switched fields: engineering → CS; careers: finance/secretariat → design → coding.",
-    mesh: ({ mats }) => (
-      <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[1.6, 1.6, 0.6, 24]} />
-        <meshStandardMaterial {...mats.path} />
-      </mesh>
-    ),
-  },
-];
-
-/* =========================
-   World Pieces
-========================= */
-
-const Ground = ({ mats }: { mats: Materials }) => {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-      <planeGeometry args={[50, 50]} />
-      <meshStandardMaterial {...mats.grass} />
-    </mesh>
-  );
-};
-
-const Walls = ({ mats }: { mats: Materials }) => {
-  const sides = ["north", "south", "east", "west"] as const;
-  const positions: Record<(typeof sides)[number], Vec3> = {
-    north: [0, 2.5, -25],
-    south: [0, 2.5, 25],
-    east: [25, 2.5, 0],
-    west: [-25, 2.5, 0],
-  };
-  const rotations: Record<(typeof sides)[number], Vec3> = {
-    north: [0, 0, 0],
-    south: [0, 0, 0],
-    east: [0, Math.PI / 2, 0],
-    west: [0, Math.PI / 2, 0],
-  };
-
-  return (
-    <>
-      {sides.map((side) => (
-        <mesh
-          key={side}
-          position={positions[side]}
-          rotation={rotations[side]}
-          receiveShadow
-          castShadow
-        >
-          <boxGeometry args={[50, 5, 1]} />
-          <meshStandardMaterial {...mats.wall} />
-        </mesh>
-      ))}
-    </>
-  );
-};
-
-const OliveTree = ({ mats }: { mats: Materials }) => {
-  return (
-    <>
-      <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.5, 0.5, 5, 16]} />
-        <meshStandardMaterial {...mats.trunk} />
-      </mesh>
-      <mesh position={[0, 5, 0]} castShadow receiveShadow>
-        <sphereGeometry args={[3, 24, 24]} />
-        <meshStandardMaterial {...mats.leaves} />
-      </mesh>
-    </>
-  );
-};
-
-const Paths = ({ mats }: { mats: Materials }) => {
-  const positions: Vec3[] = [
-    [-10, 0.01, 0],
-    [10, 0.01, 0],
-    [0, 0.01, -10],
-    [0, 0.01, 10],
-  ];
-  return (
-    <>
-      {positions.map((pos, i) => (
-        <mesh
-          key={i}
-          position={pos}
-          rotation={[-Math.PI / 2, 0, 0]}
-          receiveShadow
-        >
-          <planeGeometry args={[8, 4]} />
-          <meshStandardMaterial {...mats.path} />
-        </mesh>
-      ))}
-    </>
-  );
-};
-
-/* =========================
-   First-person Player
-========================= */
-
-const Player = ({
-  enabled,
-  bounds = 24.2,
-  speed = 5,
-}: {
-  enabled: boolean;
-  bounds?: number;
-  speed?: number;
+const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
+  origin = [-14, 0, -6],
+  isNight = false,
 }) => {
-  const { camera } = useThree();
-  const keys = useRef<Record<string, boolean>>({});
+  // A subtle base patch so the “zone” reads as one area
+  const [x, y, z] = origin;
 
-  useEffect(() => {
-    if (enabled) {
-      camera.position.set(0, 1.7, 18);
-      camera.lookAt(0, 1.7, 0);
-    }
-  }, [enabled, camera]);
+  const [w, h] = [20, 20];
 
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => (keys.current[e.code] = true);
-    const up = (e: KeyboardEvent) => (keys.current[e.code] = false);
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-    return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-    };
-  }, []);
+  return (
+    <group position={origin}>
+      {/* zone base */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+        position={[8, 0.005, 8]}
+      >
+        <planeGeometry args={[w, h]} />
+        <meshStandardMaterial color="#9ab38c" roughness={1} />
+      </mesh>
 
-  useFrame((_, dt) => {
-    if (!enabled) return;
+      <WoodFence origin={[-2, 0.0001, -2]} size={[w, h]} />
 
-    const dir = new THREE.Vector3();
-    const right = new THREE.Vector3();
-    const forward = new THREE.Vector3();
+      {/* physical lamp meshes */}
+      <GardenLamp position={[-x - 5.5, 0, -1]} isNight={isNight} />
+      <GardenLamp position={[-1, 0, y - 1]} isNight={isNight} />
+      <GardenLamp position={[-z - 5.5, 0, -z - 5.5]} isNight={isNight} />
+      <GardenLamp position={[-1, 0, -x - 5.5]} isNight={isNight} />
 
-    camera.getWorldDirection(forward);
-    forward.y = 0;
-    forward.normalize();
-    right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+      <MultiPurposeTable
+        position={[2, 0, 15.5]}
+        topSize={[6.6, 1.6]}
+        rotation={[0, Math.PI / 2, 0]}
+      />
 
-    if (keys.current["KeyW"]) dir.add(forward);
-    if (keys.current["KeyS"]) dir.sub(forward);
-    if (keys.current["KeyA"]) dir.sub(right);
-    if (keys.current["KeyD"]) dir.add(right);
+      <MotoSpot position={[1.5, 0, -1.25]} />
+      <Signpost position={[0.5, 0.02, 0.5]} />
 
-    if (dir.lengthSq() > 0) {
-      dir.normalize();
-      camera.position.addScaledVector(dir, speed * dt);
-    }
+      {/* layout (relative to origin) */}
+      <SwimmingPool position={[12, 0.02, 12]} />
+      <WalkingTrack position={[12, 0.02, 12]} />
+      <VolleyCourt position={[12, 0.02, 2]} />
 
-    // keep within walls
-    camera.position.x = THREE.MathUtils.clamp(
-      camera.position.x,
-      -bounds,
-      bounds
-    );
-    camera.position.z = THREE.MathUtils.clamp(
-      camera.position.z,
-      -bounds,
-      bounds
-    );
-
-    // avoid center trunk (simple radial push)
-    const r = Math.hypot(camera.position.x, camera.position.z);
-    const minR = 2.0;
-    if (r < minR) {
-      const scale = minR / (r || 0.0001);
-      camera.position.x *= scale;
-      camera.position.z *= scale;
-    }
-  });
-
-  return enabled ? <PointerLockControls selector="#click-to-lock" /> : null;
+      {/* Projector mounted on the west wall of the zone (facing east) */}
+      <WallProjector
+        screenPos={[-1.55, 2, 12]}
+        screenSize={[7, 3.5]}
+        videoSrc={"/media/movies.mp4"}
+        screenRotation={[0, 1.57, 0]}
+      />
+    </group>
+  );
 };
 
 /* =========================
@@ -435,18 +204,26 @@ const Player = ({
 ========================= */
 
 const GardenScene = (): React.ReactElement => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isNight, setIsNight] = useState(false);
-  const [showLabels, setShowLabels] = useState(true);
   const [walkMode, setWalkMode] = useState(false);
 
   // Materials as props objects to keep TSX happy & reusable
   const mats: Materials = useMemo(
     () => ({
       grass: { color: "#7c9c6e", roughness: 1 },
-      wall: { color: "#c4b7a6", roughness: 0.9 },
       trunk: { color: "#5a3e2b", roughness: 1 },
-      leaves: { color: "#355e3b", roughness: 0.8 },
+      leaves: {
+        color: "#355e3b",
+        roughness: 0.8,
+        emissive: "#09150b",
+        emissiveIntensity: 0.15,
+      },
+      wall: {
+        color: "#c4b7a6",
+        roughness: 0.9,
+        emissive: "#1a1713",
+        emissiveIntensity: 0.05,
+      },
       path: { color: "#c2b280", roughness: 0.9 },
       water: {
         color: "#3a8fb7",
@@ -506,13 +283,6 @@ const GardenScene = (): React.ReactElement => {
               {isNight ? "Day Mode" : "Night Mode"}
             </button>
             <button
-              onClick={() => setShowLabels((v) => !v)}
-              style={btnStyle}
-              title="Show/Hide station labels"
-            >
-              {showLabels ? "Hide Labels" : "Show Labels"}
-            </button>
-            <button
               onClick={() => setWalkMode((v) => !v)}
               style={btnStyle}
               title="Toggle Walk/Orbit"
@@ -554,48 +324,90 @@ const GardenScene = (): React.ReactElement => {
       shadows
       camera={{ position: [0, 12, 20], fov: 50 }}
       style={{ width: "100vw", height: "100vh" }}
-      onPointerMissed={() => setSelectedId(null)}
+      onCreated={({ gl }) => {
+        gl.shadowMap.enabled = true;
+        gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      }}
     >
+      {/* background color */}
+      <color attach="background" args={[isNight ? "#0c1222" : "#cfe7ff"]} />
+
+      {/* sky / stars */}
+      {!isNight ? (
+        <Sky
+          distance={450000}
+          sunPosition={[10, 20, 10]}
+          inclination={0.49}
+          azimuth={0.25}
+        />
+      ) : (
+        <Stars
+          radius={80}
+          depth={20}
+          count={3000}
+          factor={2}
+          saturation={0}
+          fade
+        />
+      )}
+
+      <fog attach="fog" args={[isNight ? "#0c1222" : "#cfe7ff", 45, 90]} />
+
       {/* Lighting */}
-      <ambientLight intensity={isNight ? 0.15 : 0.4} />
+      <ambientLight intensity={isNight ? 0.12 : 0.35} />
+
       <hemisphereLight
-        color={isNight ? "#1e2742" : "#bcd3e6"}
-        groundColor={isNight ? "#2a3a2f" : "#7c9c6e"}
-        intensity={isNight ? 0.15 : 0.25}
-      />
-      <directionalLight
-        position={[10, 15, 5]}
-        intensity={isNight ? 0.5 : 1.2}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        color={isNight ? "#c2d0ff" : "#ffffff"}
+        color={isNight ? "#2a3d6b" : "#cfe7ff"}
+        groundColor={isNight ? "#1f2b23" : "#8fb28a"}
+        intensity={isNight ? 0.18 : 0.25}
       />
 
+      {!isNight ? (
+        <directionalLight
+          position={[12, 18, 8]}
+          intensity={1.2}
+          color="#fffbe8"
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-bias={-0.0005}
+          shadow-normalBias={0.02}
+        />
+      ) : (
+        <directionalLight
+          position={[0, 50, 0]}
+          intensity={0.5}
+          color="#9db7ff"
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-bias={-0.0005}
+          shadow-normalBias={0.02}
+        />
+      )}
       {/* First-person controls */}
       <Player enabled={walkMode} />
-
       {/* World */}
+      {/* Background + atmospheric fade (optional but recommended) */}
+      <color attach="background" args={[isNight ? "#0c1222" : "#cfe7ff"]} />
+      <fog attach="fog" args={[isNight ? "#0c1222" : "#cfe7ff", 120, 800]} />
+
+      {/* Infinite outer floor */}
+      <OuterInfiniteGround isNight={isNight} />
+
       <Ground mats={mats} />
       <Walls mats={mats} />
       <OliveTree mats={mats} />
-      <Paths mats={mats} />
 
-      {/* Stations */}
-      {STATIONS.map((s) => (
-        <Station
-          key={s.id}
-          id={s.id}
-          position={s.pos}
-          label={s.label}
-          body={s.body}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
-          showLabels={showLabels}
-        >
-          {s.mesh({ mats })}
-        </Station>
-      ))}
+      {/* Evenly distributed wall sconces on all walls */}
+      <WallSconceRow wall="north" count={5} isNight={isNight} />
+      <WallSconceRow wall="south" count={5} isNight={isNight} />
+      <WallSconceRow wall="east" count={4} isNight={isNight} />
+      <WallSconceRow wall="west" count={4} isNight={isNight} />
+
+      <WallDoor position={[-18.9, 1.0, -24.5]} rotation={[0, Math.PI / 2, 0]} />
+
+      <HobbiesZone origin={[-22.9, 0.01, -22.9]} isNight={isNight} />
 
       {/* HUD */}
       <Hud />
