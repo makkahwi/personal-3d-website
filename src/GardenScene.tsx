@@ -1,27 +1,22 @@
-import { Html, OrbitControls, Sky, Stars } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Sky, Stars } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
 import * as React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import * as THREE from "three";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+
 import Ground from "./components/Ground";
 import OliveTree from "./components/OliveTree";
 import OuterInfiniteGround from "./components/OuterInfiniteGround";
 import Player from "./components/Player";
-import Signpost from "./components/SignPost";
-import SwimmingPool from "./components/SwimmingPool";
+import SceneControl from "./components/SceneControl";
 import WallDoor from "./components/WallDoor";
 import Walls from "./components/Walls";
 import WallSconceRow from "./components/WallSconceRow";
-import WoodFence from "./components/WoodFence";
-import GardenLamp from "./components/GardenLamp";
-import MultiPurposeTable from "./views/MultiPurposeTable";
+import HobbiesZone from "./views/HobbiesZone";
 
 /* =========================
    Types
 ========================= */
-
-type Vec3 = [number, number, number];
 
 type MaterialParams = THREE.MeshStandardMaterialParameters;
 
@@ -35,168 +30,6 @@ type Materials = {
   wood: MaterialParams;
   dark: MaterialParams;
   red: MaterialParams;
-};
-
-/** Walking track (مسار مشي): flattened torus */
-const WalkingTrack: React.FC<{ position: Vec3 }> = ({ position }) => (
-  <group position={position} rotation={[-Math.PI / 2, 0, 0]}>
-    <mesh receiveShadow>
-      <torusGeometry args={[5.2, 0.25, 16, 64]} />
-      <meshStandardMaterial color="#bda781" roughness={0.95} />
-    </mesh>
-  </group>
-);
-
-/** Motorcycle placeholder (wheels + body) near a Door */
-const MotoSpot: React.FC<{ position: Vec3 }> = ({ position }) => (
-  <group position={position}>
-    {/* Wheels */}
-    <mesh castShadow position={[-0.6, 0.4, 0]}>
-      <torusGeometry args={[0.35, 0.09, 12, 24]} />
-      <meshStandardMaterial color="#111" roughness={0.8} metalness={0.1} />
-    </mesh>
-    <mesh castShadow position={[0.7, 0.4, 0]}>
-      <torusGeometry args={[0.35, 0.09, 12, 24]} />
-      <meshStandardMaterial color="#111" roughness={0.8} metalness={0.1} />
-    </mesh>
-    {/* Body */}
-    <mesh castShadow position={[0.05, 0.8, 0]}>
-      <boxGeometry args={[1.3, 0.3, 0.4]} />
-      <meshStandardMaterial color="#a52828" roughness={0.6} />
-    </mesh>
-    <mesh castShadow position={[0.25, 0.95, 0]}>
-      <boxGeometry args={[0.5, 0.15, 0.35]} />
-      <meshStandardMaterial color="#202020" roughness={0.7} />
-    </mesh>
-  </group>
-);
-
-/** Volleyball mini-court + net */
-const VolleyCourt: React.FC<{ position: Vec3 }> = ({ position }) => (
-  <group position={position}>
-    {/* Court base */}
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-      <planeGeometry args={[10, 5]} />
-      <meshStandardMaterial color="#e8d6b3" roughness={0.95} />
-    </mesh>
-    {/* Lines */}
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-      <planeGeometry args={[0.05, 5]} />
-      <meshStandardMaterial color="#ffffff" />
-    </mesh>
-    {/* Net */}
-    <mesh position={[0, 2, 0]} rotation={[0, 1.55, 0]}>
-      <planeGeometry args={[5, 1.2]} />
-      <meshStandardMaterial color="#ffffff" transparent opacity={0.35} />
-    </mesh>
-  </group>
-);
-
-/** Wall Projector: emits a video/GIF onto the wall */
-const WallProjector: React.FC<{
-  screenPos: [number, number, number]; // plane position on wall
-  screenSize?: [number, number];
-  videoSrc: string;
-  screenRotation?: [number, number, number]; // NEW
-}> = ({
-  screenPos,
-  screenSize = [3, 1.7],
-  videoSrc,
-  screenRotation = [0, 0, 0],
-}) => {
-  const video = useMemo(() => {
-    const v = document.createElement("video");
-    v.src = videoSrc;
-    v.crossOrigin = "anonymous";
-    v.loop = true;
-    v.muted = true;
-    v.playsInline = true;
-    return v;
-  }, [videoSrc]);
-
-  useEffect(() => {
-    // Autoplay (user gesture may be required in some browsers; clicking page will start it)
-    video.play().catch(() => {});
-  }, [video]);
-
-  const texture = useMemo(() => new THREE.VideoTexture(video), [video]);
-
-  return (
-    <group>
-      <mesh castShadow position={[2, 0.75, 12]}>
-        <boxGeometry args={[0.4, 0.25, 0.25]} />
-        <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
-      </mesh>
-      {/* mount on wall */}
-      <mesh
-        position={screenPos}
-        rotation={screenRotation}
-        castShadow
-        receiveShadow
-      >
-        <planeGeometry args={screenSize} />
-        <meshStandardMaterial map={texture} toneMapped={false} />
-      </mesh>
-    </group>
-  );
-};
-
-/* =========================
-   Zones
-========================= */
-
-const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
-  origin = [-14, 0, -6],
-  isNight = false,
-}) => {
-  // A subtle base patch so the “zone” reads as one area
-  const [x, y, z] = origin;
-
-  const [w, h] = [20, 20];
-
-  return (
-    <group position={origin}>
-      {/* zone base */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-        position={[8, 0.005, 8]}
-      >
-        <planeGeometry args={[w, h]} />
-        <meshStandardMaterial color="#9ab38c" roughness={1} />
-      </mesh>
-
-      <WoodFence origin={[-2, 0.0001, -2]} size={[w, h]} />
-
-      {/* physical lamp meshes */}
-      <GardenLamp position={[-x - 5.5, 0, -1]} isNight={isNight} />
-      <GardenLamp position={[-1, 0, y - 1]} isNight={isNight} />
-      <GardenLamp position={[-z - 5.5, 0, -z - 5.5]} isNight={isNight} />
-      <GardenLamp position={[-1, 0, -x - 5.5]} isNight={isNight} />
-
-      <MultiPurposeTable
-        position={[2, 0, 15.5]}
-        topSize={[6.6, 1.6]}
-        rotation={[0, Math.PI / 2, 0]}
-      />
-
-      <MotoSpot position={[1.5, 0, -1.25]} />
-      <Signpost position={[0.5, 0.02, 0.5]} />
-
-      {/* layout (relative to origin) */}
-      <SwimmingPool position={[12, 0.02, 12]} />
-      <WalkingTrack position={[12, 0.02, 12]} />
-      <VolleyCourt position={[12, 0.02, 2]} />
-
-      {/* Projector mounted on the west wall of the zone (facing east) */}
-      <WallProjector
-        screenPos={[-1.55, 2, 12]}
-        screenSize={[7, 3.5]}
-        videoSrc={"/media/movies.mp4"}
-        screenRotation={[0, 1.57, 0]}
-      />
-    </group>
-  );
 };
 
 /* =========================
@@ -238,86 +71,6 @@ const GardenScene = (): React.ReactElement => {
     }),
     []
   );
-
-  const Hud = () => {
-    const controlsRef = useRef<OrbitControlsImpl | null>(null);
-    const { camera } = useThree();
-    const resetCamera = () => {
-      setWalkMode(false);
-      camera.position.set(0, 12, 20);
-      camera.lookAt(0, 0, 0);
-      controlsRef.current?.target.set(0, 0, 0);
-      controlsRef.current?.update();
-    };
-    return (
-      <>
-        {!walkMode && (
-          <OrbitControls
-            ref={controlsRef as React.MutableRefObject<OrbitControlsImpl>}
-            maxPolarAngle={Math.PI / 2.2}
-            minDistance={10}
-            maxDistance={40}
-            enableDamping
-            dampingFactor={0.06}
-          />
-        )}
-        <Html fullscreen>
-          <div
-            id="click-to-lock"
-            style={{
-              position: "fixed",
-              top: "auto",
-              right: "auto",
-              display: "flex",
-              padding: 10,
-              gap: 8,
-              zIndex: 10,
-              userSelect: "none",
-            }}
-          >
-            <button
-              onClick={() => setIsNight((v) => !v)}
-              style={btnStyle}
-              title="Toggle day/night"
-            >
-              {isNight ? "Day Mode" : "Night Mode"}
-            </button>
-            <button
-              onClick={() => setWalkMode((v) => !v)}
-              style={btnStyle}
-              title="Toggle Walk/Orbit"
-            >
-              {walkMode ? "Orbit Mode" : "Walk Mode"}
-            </button>
-            <button onClick={resetCamera} style={btnStyle} title="Reset camera">
-              Reset Camera
-            </button>
-          </div>
-
-          {walkMode && (
-            <div
-              style={{
-                position: "fixed",
-                left: "auto",
-                bottom: "auto",
-                margin: 10,
-                padding: "8px 10px",
-                background: "rgba(0,0,0,0.55)",
-                color: "#fff",
-                borderRadius: 8,
-                fontSize: 12,
-              }}
-            >
-              <div>
-                <b>Walk mode</b>: Click scene to lock cursor
-              </div>
-              <div>Move: W A S D — Look: Mouse — Exit: Esc</div>
-            </div>
-          )}
-        </Html>
-      </>
-    );
-  };
 
   return (
     <Canvas
@@ -409,22 +162,14 @@ const GardenScene = (): React.ReactElement => {
 
       <HobbiesZone origin={[-22.9, 0.01, -22.9]} isNight={isNight} />
 
-      {/* HUD */}
-      <Hud />
+      <SceneControl
+        isNight={isNight}
+        setIsNight={setIsNight}
+        walkMode={walkMode}
+        setWalkMode={setWalkMode}
+      />
     </Canvas>
   );
 };
 
 export default GardenScene;
-
-/* =========================
-   Styles
-========================= */
-
-const btnStyle: React.CSSProperties = {
-  padding: "6px 10px",
-  borderRadius: 8,
-  border: "1px solid rgba(0,0,0,0.15)",
-  background: "#fff",
-  cursor: "pointer",
-};
