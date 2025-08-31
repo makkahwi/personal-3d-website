@@ -34,32 +34,22 @@ const WoodFence: React.FC<{
   gap?: number;
 }> = ({ origin, size, gap = 2.4 }) => {
   const [w, h] = size;
-  const [ox, oy, oz] = origin; // bottom-left of the fence area
+  const [ox, oy, oz] = origin;
   const posts: React.ReactElement[] = [];
 
-  // perimeter posts
-  for (let x = 0; x <= w; x += gap) {
-    posts.push(<FencePost key={`n-${x}`} position={[ox + x, oy, oz + h]} />);
-  }
   for (let z = 0; z <= h; z += gap) {
     posts.push(<FencePost key={`e-${z}`} position={[ox + w, oy, oz + z]} />);
   }
 
   const factor = 10;
 
-  // rails (two per side)
   return (
     <group>
       {posts}
-      {/* north rail */}
+
       <FenceRail
-        from={[ox + factor, oy + 0.6, oz + h - factor]}
-        to={[ox + w + factor, oy + 0.6, oz + h - factor]}
-      />
-      {/* east rail */}
-      <FenceRail
-        from={[ox + w - factor, oy + 0.6, oz + factor]}
-        to={[ox + w - factor, oy + 0.6, oz + h + factor]}
+        from={[ox + factor, oy + 0.6, oz - factor]}
+        to={[ox + factor, oy + 0.6, oz - factor]}
       />
     </group>
   );
