@@ -4,8 +4,6 @@ import * as React from "react";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-import type { RootState } from "@react-three/fiber";
-
 type Vec3 = [number, number, number];
 
 type CountryItem = {
@@ -189,7 +187,7 @@ const Cabin: React.FC<{
   active: boolean;
   setActive: (id: string | null) => void;
   isNight: boolean;
-}> = ({ position, angle, item, active, setActive, isNight }) => {
+}> = ({ position, item, active, setActive, isNight }) => {
   const [hovered, setHovered] = useState(false);
   useCursor(hovered);
 
