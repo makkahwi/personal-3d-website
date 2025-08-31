@@ -159,7 +159,7 @@ const GardenScene = (): React.ReactElement => {
 
       <WallDoor position={[-18.9, 1.0, -24.5]} rotation={[0, Math.PI / 2, 0]} />
 
-      <HobbiesZone origin={[-22.9, 0.01, -22.9]} isNight={isNight} />
+      <HobbiesZone isNight={isNight} />
 
       <SceneControl
         isNight={isNight}
