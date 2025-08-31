@@ -19,6 +19,17 @@ const VolleyBallCourt: React.FC<{ position: Vec3 }> = ({ position }) => (
       <planeGeometry args={[5, 1.2]} />
       <meshStandardMaterial color="#ffffff" transparent opacity={0.35} />
     </mesh>
+
+    {/* poles */}
+    <mesh castShadow>
+      <cylinderGeometry args={[0.07, 0.08, 5.2, 5]} />
+      <meshStandardMaterial color="#000" roughness={0.9} />
+    </mesh>
+
+    <mesh castShadow>
+      <cylinderGeometry args={[0.07, 0.08, 5.2, 5]} />
+      <meshStandardMaterial color="#000" roughness={0.9} />
+    </mesh>
   </group>
 );
 

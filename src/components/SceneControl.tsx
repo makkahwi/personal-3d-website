@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRef } from "react";
 
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import BottomBar from "../views/BottomBar";
 
 const SceneControl = ({
   walkMode,
@@ -39,78 +40,17 @@ const SceneControl = ({
       )}
 
       <Html fullscreen>
-        <div
-          style={{
-            position: "fixed",
-            top: "auto",
-            right: "auto",
-            display: "flex",
-            padding: 10,
-            gap: 8,
-            zIndex: 10,
-            userSelect: "none",
-            pointerEvents: "none",
-          }}
-        >
-          <div style={{ display: "flex", gap: 8, pointerEvents: "auto" }}>
-            <button
-              onClick={() => setIsNight((v) => !v)}
-              style={btnStyle}
-              title="Toggle day/night"
-            >
-              {isNight ? "Day Mode" : "Night Mode"}
-            </button>
-            <button
-              onClick={() => setWalkMode((v) => !v)}
-              style={btnStyle}
-              title="Toggle Walk/Orbit"
-            >
-              {walkMode ? "Orbit Mode" : "Walk Mode"}
-            </button>
-            <button onClick={resetCamera} style={btnStyle} title="Reset camera">
-              Reset Camera
-            </button>
-          </div>
-        </div>
-
-        {walkMode && (
-          <div
-            style={{
-              position: "fixed",
-              right: "-45vw",
-              bottom: "auto",
-              margin: 10,
-              padding: "8px 10px",
-              background: "rgba(0,0,0,0.55)",
-              color: "#fff",
-              borderRadius: 8,
-              fontSize: 12,
-              pointerEvents: "none",
-            }}
-          >
-            <div>
-              <b>Walk mode</b>
-            </div>
-            <div>Move: W A S D </div>
-            <div>Look Around: Mouse</div>
-            <div>Exit: Esc</div>
-          </div>
-        )}
+        <BottomBar
+          walkMode={walkMode}
+          setWalkMode={setWalkMode}
+          isNight={isNight}
+          setIsNight={setIsNight}
+          onReset={resetCamera}
+          // you can pass speed/setSpeed later if you wire them (see step 3)
+        />
       </Html>
     </>
   );
 };
 
 export default SceneControl;
-
-/* =========================
-   Styles
-========================= */
-
-const btnStyle: React.CSSProperties = {
-  padding: "6px 10px",
-  borderRadius: 8,
-  border: "1px solid rgba(0,0,0,0.15)",
-  background: "#fff",
-  cursor: "pointer",
-};
