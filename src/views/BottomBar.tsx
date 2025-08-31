@@ -24,21 +24,28 @@ const BottomBar: React.FC<Props> = ({
   return createPortal(
     // Html fullscreen parent will wrap this; keep outer container non-interactive
     <div
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        // If pointer is currently locked, ensure it's released before handling UI
+        if (document.pointerLockElement) {
+          document.exitPointerLock?.();
+        }
+      }}
       style={{
         position: "fixed",
-        left: "-30vw",
-        bottom: "-45vh",
+        left: 0,
+        right: 0,
+        bottom: 40,
         display: "flex",
         justifyContent: "center",
-        zIndex: 20,
-        width: "60vw",
-        pointerEvents: "none",
+        zIndex: 999,
+        pointerEvents: "auto",
       }}
     >
       <div
         style={{
           pointerEvents: "auto",
-          width: "100%",
+          width: "max-content",
           display: "flex",
           alignItems: "center",
           gap: 12,

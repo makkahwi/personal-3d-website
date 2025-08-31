@@ -34,14 +34,6 @@ const Player = ({
     };
   }, []);
 
-  useEffect(() => {
-    if (enabled) {
-      plcRef.current?.lock?.();
-    } else {
-      plcRef.current?.unlock?.();
-    }
-  }, [enabled]);
-
   useFrame((_, dt) => {
     if (!enabled) return;
 

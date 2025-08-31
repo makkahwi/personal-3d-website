@@ -76,7 +76,12 @@ const GardenScene = (): React.ReactElement => {
     <Canvas
       shadows
       camera={{ position: [0, 12, 20], fov: 50 }}
-      style={{ width: "100vw", height: "100vh" }}
+      style={{
+        width: "100vw",
+        height: "100vh",
+        position: "relative",
+        zIndex: 1,
+      }}
       onCreated={({ gl }) => {
         gl.shadowMap.enabled = true;
         gl.shadowMap.type = THREE.PCFSoftShadowMap;

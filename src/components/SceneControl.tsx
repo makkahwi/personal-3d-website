@@ -21,7 +21,7 @@ const SceneControl = ({
   const { camera } = useThree();
   const resetCamera = () => {
     setWalkMode(false);
-    camera.position.set(200, 120, 200);
+    camera.position.set(0, 12, 20);
     camera.lookAt(0, 0, 0);
     controlsRef.current?.target.set(0, 0, 0);
     controlsRef.current?.update();
