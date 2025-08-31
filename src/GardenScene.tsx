@@ -82,9 +82,6 @@ const GardenScene = (): React.ReactElement => {
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
       }}
     >
-      {/* background color */}
-      <color attach="background" args={[isNight ? "#0c1222" : "#cfe7ff"]} />
-
       {/* sky / stars */}
       {!isNight ? (
         <Sky
@@ -103,8 +100,6 @@ const GardenScene = (): React.ReactElement => {
           fade
         />
       )}
-
-      <fog attach="fog" args={[isNight ? "#0c1222" : "#cfe7ff", 45, 90]} />
 
       {/* Lighting */}
       <ambientLight intensity={isNight ? 0.12 : 0.35} />
@@ -141,7 +136,6 @@ const GardenScene = (): React.ReactElement => {
       {/* First-person controls */}
       <Player enabled={walkMode} />
       {/* World */}
-      {/* Background + atmospheric fade (optional but recommended) */}
       <color attach="background" args={[isNight ? "#0c1222" : "#cfe7ff"]} />
       <fog attach="fog" args={[isNight ? "#0c1222" : "#cfe7ff", 120, 800]} />
 

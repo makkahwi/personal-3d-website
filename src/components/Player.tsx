@@ -14,6 +14,7 @@ const Player = ({
 }) => {
   const { camera } = useThree();
   const keys = useRef<Record<string, boolean>>({});
+  const plcRef = useRef<any>(null);
 
   useEffect(() => {
     if (enabled) {
@@ -33,6 +34,14 @@ const Player = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (enabled) {
+      plcRef.current?.lock?.();
+    } else {
+      plcRef.current?.unlock?.();
+    }
+  }, [enabled]);
+
   useFrame((_, dt) => {
     if (!enabled) return;
 
@@ -43,7 +52,7 @@ const Player = ({
     camera.getWorldDirection(forward);
     forward.y = 0;
     forward.normalize();
-    right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+    right.crossVectors(new THREE.Vector3(0, 1, 0), forward).normalize();
 
     if (keys.current["KeyW"]) dir.add(forward);
     if (keys.current["KeyS"]) dir.sub(forward);
@@ -77,7 +86,7 @@ const Player = ({
     }
   });
 
-  return enabled ? <PointerLockControls selector="#click-to-lock" /> : null;
+  return enabled ? <PointerLockControls ref={plcRef} /> : null;
 };
 
 export default Player;
