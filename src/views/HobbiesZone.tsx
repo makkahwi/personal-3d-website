@@ -10,6 +10,7 @@ import WallProjector from "../components/WallProjector";
 
 import type { Vec3 } from "../types";
 import MultiPurposeTable from "./MultiPurposeTable";
+import WorldFairCarousel from "./WorldFairCarousel";
 
 const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
   origin = [-22.9, 0.01, -8],
@@ -33,9 +34,9 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
       </mesh>
 
       {/* physical lamp meshes */}
-      <GardenLamp position={[-x - 5.5, 0, -16]} isNight={isNight} />
+      <GardenLamp position={[-x - 0.5, 0, -16]} isNight={isNight} />
       <GardenLamp position={[-1, 0, y - 16]} isNight={isNight} />
-      <GardenLamp position={[-z + 9.5, 0, -z + 24]} isNight={isNight} />
+      <GardenLamp position={[-z + 14.5, 0, -z + 24]} isNight={isNight} />
       <GardenLamp position={[-1, 0, -x + 9]} isNight={isNight} />
 
       <MultiPurposeTable
@@ -59,6 +60,8 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
         videoSrc={"/media/movies.mp4"}
         screenRotation={[0, 1.57, 0]}
       />
+
+      <WorldFairCarousel position={[5, 0, 25]} isNight={isNight} />
     </group>
   );
 };
