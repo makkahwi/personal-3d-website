@@ -217,18 +217,18 @@ const ITEMS: Item[] = [
   { id: "eg", name: "Egypt", flag: "🇪🇬", builder: PyramidAndObelisk },
 ];
 
-const Pedestal: React.FC = () => (
-  <group>
-    <mesh castShadow receiveShadow>
-      <cylinderGeometry args={[0.45, 0.5, 0.22, 24]} />
-      <meshStandardMaterial color="#d6d2c9" roughness={0.85} />
-    </mesh>
-    <mesh position={[0, 0.14, 0]}>
-      <cylinderGeometry args={[0.5, 0.5, 0.04, 24]} />
-      <meshStandardMaterial color="#c3bdb1" roughness={0.9} />
-    </mesh>
-  </group>
-);
+// const Pedestal: React.FC = () => (
+//   <group>
+//     <mesh castShadow receiveShadow>
+//       <cylinderGeometry args={[0.45, 0.5, 0.22, 24]} />
+//       <meshStandardMaterial color="#d6d2c9" roughness={0.85} />
+//     </mesh>
+//     <mesh position={[0, 0.14, 0]}>
+//       <cylinderGeometry args={[0.5, 0.5, 0.04, 24]} />
+//       <meshStandardMaterial color="#c3bdb1" roughness={0.9} />
+//     </mesh>
+//   </group>
+// );
 
 const MiniSpot: React.FC<{
   item: Item;
@@ -278,8 +278,8 @@ const MiniSpot: React.FC<{
       //   setSelected(isOpen ? null : item.id);
       // }}
     >
-      <Pedestal />
-      <group position={[0, 0.24, 0]}>{item.builder()}</group>
+      {/* <Pedestal /> */}
+      <group position={[0, -0.15, 0]}>{item.builder()}</group>
 
       {/* flag label */}
       <Html distanceFactor={3} position={[0, 0, 0]} transform>
