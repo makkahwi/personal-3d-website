@@ -18,7 +18,7 @@ const CookingModule: React.FC<{ offset?: [number, number, number] }> = ({
       </mesh>
     ))}
     {/* Cutting board */}
-    <mesh position={[0.65, 0.02, 0]}>
+    <mesh position={[0.65, -0.05, 0]}>
       <boxGeometry args={[0.6, 0.04, 0.4]} />
       <meshStandardMaterial color="#9a6b3d" roughness={0.9} />
     </mesh>

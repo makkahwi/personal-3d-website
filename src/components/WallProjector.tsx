@@ -32,10 +32,10 @@ const WallProjector: React.FC<{
 
   return (
     <group>
-      <mesh castShadow position={[2, 0.75, -8]}>
+      {/* <mesh castShadow position={[2, 1, -8]}>
         <boxGeometry args={[0.4, 0.25, 0.25]} />
         <meshStandardMaterial color="#2a2a2a" roughness={0.7} />
-      </mesh>
+      </mesh> */}
       {/* mount on wall */}
       <mesh position={screenPos} rotation={screenRotation}>
         <planeGeometry args={screenSize} />

@@ -31,12 +31,12 @@ const ChessModule: React.FC<{ offset?: [number, number, number] }> = ({
     <group position={offset}>
       {/* board */}
       <mesh castShadow>
-        <boxGeometry args={[0.9, 0.06, 0.9]} />
+        <boxGeometry args={[0.9, 0.07, 0.9]} />
         <meshStandardMaterial map={checker} roughness={0.85} />
       </mesh>
       {/* simple clock */}
-      <mesh castShadow position={[0, 0.18, -0.55]}>
-        <boxGeometry args={[0.24, 0.16, 0.12]} />
+      <mesh castShadow position={[0, 0.1, -0.55]}>
+        <boxGeometry args={[0.6, 0.1, 0.12]} />
         <meshStandardMaterial color="#4a4a4a" roughness={0.8} />
       </mesh>
     </group>
