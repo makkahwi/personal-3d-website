@@ -10,7 +10,7 @@ import WallProjector from "../components/WallProjector";
 
 import type { Vec3 } from "../types";
 import MultiPurposeTable from "./MultiPurposeTable";
-import WorldFairCarousel from "./WorldFairCarousel";
+import MiniaturePark from "./MiniaturePark";
 
 const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
   origin = [-22.9, 0.01, -8],
@@ -23,7 +23,7 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
 
   return (
     <group position={origin}>
-      {/* zone base */}
+      {/* zone base
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         receiveShadow
@@ -31,13 +31,7 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
       >
         <planeGeometry args={[w, h]} />
         <meshStandardMaterial color="#9ab38c" roughness={1} />
-      </mesh>
-
-      {/* physical lamp meshes */}
-      <GardenLamp position={[-x - 0.5, 0, -16]} isNight={isNight} />
-      <GardenLamp position={[-1, 0, y - 16]} isNight={isNight} />
-      <GardenLamp position={[-z + 14.5, 0, -z + 24]} isNight={isNight} />
-      <GardenLamp position={[-1, 0, -x + 9]} isNight={isNight} />
+      </mesh> */}
 
       <MultiPurposeTable
         position={[2, 0, -5]}
@@ -46,7 +40,6 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
       />
 
       <MotorCycle position={[1.5, 0, -16.25]} />
-      <Signpost position={[0.5, 0.02, 25.5]} />
 
       {/* layout (relative to origin) */}
       <SwimmingPool position={[12, 0.02, 0]} />
@@ -61,7 +54,7 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
         screenRotation={[0, 1.57, 0]}
       />
 
-      <WorldFairCarousel position={[5, 0, 25]} isNight={isNight} />
+      <MiniaturePark position={[37.5, 0, -6.5]} />
     </group>
   );
 };
