@@ -235,7 +235,7 @@ const MiniSpot: React.FC<{
   pos: Vec3;
   selected: string | null;
   setSelected: (id: string | null) => void;
-}> = ({ item, pos, selected, setSelected }) => {
+}> = ({ item, pos, selected }) => {
   const group = React.useRef<THREE.Group>(null);
   const [hover, setHover] = React.useState(false);
   useCursor(hover);
@@ -273,10 +273,10 @@ const MiniSpot: React.FC<{
         e.stopPropagation();
         setHover(false);
       }}
-      onClick={(e) => {
-        e.stopPropagation();
-        setSelected(isOpen ? null : item.id);
-      }}
+      // onClick={(e) => {
+      //   e.stopPropagation();
+      //   setSelected(isOpen ? null : item.id);
+      // }}
     >
       <Pedestal />
       <group position={[0, 0.24, 0]}>{item.builder()}</group>
@@ -373,12 +373,12 @@ const card: React.CSSProperties = {
   boxShadow: "0 12px 24px rgba(0,0,0,0.28)",
 };
 
-const title: React.CSSProperties = {
-  padding: "6px 10px",
-  borderRadius: 10,
-  background: "rgba(0,0,0,0.55)",
-  color: "#fff",
-  fontSize: 14,
-  letterSpacing: 0.4,
-  boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-};
+// const title: React.CSSProperties = {
+//   padding: "6px 10px",
+//   borderRadius: 10,
+//   background: "rgba(0,0,0,0.55)",
+//   color: "#fff",
+//   fontSize: 14,
+//   letterSpacing: 0.4,
+//   boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+// };

@@ -49,7 +49,6 @@ const MultiPurposeTable: React.FC<{
       {/* modules laid out left→right: Cooking | Chess | PC */}
       {/* cooking block centered in first third */}
       <CookingModule offset={[L * (1 / 6), 0.9, 0]} />
-      <Divider x={(1.25 * L) / 3} />
 
       {/* chess block centered in second third */}
       <ChessModule offset={[L * (3.5 / 6), 0.82, 0]} />

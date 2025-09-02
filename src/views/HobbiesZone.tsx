@@ -1,8 +1,6 @@
 import * as React from "react";
 
-import GardenLamp from "../components/GardenLamp";
 import MotorCycle from "../components/MotorCycle";
-import Signpost from "../components/SignPost";
 import SwimmingPool from "../components/SwimmingPool";
 import VolleyBallCourt from "../components/VolleyCourt";
 import WalkingTrack from "../components/WalkingTrack";
@@ -13,14 +11,9 @@ import MultiPurposeTable from "./MultiPurposeTable";
 import MiniaturePark from "./MiniaturePark";
 
 const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
-  origin = [-22.9, 0.01, -8],
-  isNight = false,
+  origin = [-8, 0.01, -20.5],
 }) => {
   // A subtle base patch so the “zone” reads as one area
-  const [x, y, z] = origin;
-
-  const [w, h] = [30, 50];
-
   return (
     <group position={origin}>
       {/* zone base
@@ -34,27 +27,27 @@ const HobbiesZone: React.FC<{ origin?: Vec3; isNight: boolean }> = ({
       </mesh> */}
 
       <MultiPurposeTable
-        position={[2, 0, -5]}
+        position={[-12, 0, 7.5]}
         topSize={[6.6, 1.6]}
         rotation={[0, Math.PI / 2, 0]}
       />
 
-      <MotorCycle position={[1.5, 0, -16.25]} />
+      <MotorCycle position={[1.5, 0, -3.5]} />
 
       {/* layout (relative to origin) */}
-      <SwimmingPool position={[12, 0.02, 0]} />
-      <WalkingTrack position={[12, 0.02, 0]} />
-      <VolleyBallCourt position={[12, 0.02, -13]} />
+      <SwimmingPool position={[-3, 0.02, 12]} />
+      <WalkingTrack position={[-3, 0.02, 12]} />
+      <VolleyBallCourt position={[5, 0.02, 1]} />
 
       {/* Projector mounted on the west wall of the zone (facing east) */}
       <WallProjector
-        screenPos={[-1.55, 2, -8]}
+        screenPos={[-16.45, 2, 4]}
         screenSize={[7, 3.5]}
         videoSrc={"/media/movies.mp4"}
         screenRotation={[0, 1.57, 0]}
       />
 
-      <MiniaturePark position={[37.5, 0, -6.5]} />
+      <MiniaturePark position={[22.5, 0, 6.5]} />
     </group>
   );
 };
