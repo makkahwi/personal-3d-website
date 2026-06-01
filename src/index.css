@@ -1,52 +1,28 @@
-:root {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #2f3229;
-}
+:root { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; color: #2f3229; }
 * { box-sizing: border-box; }
 body, html, #root { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 .app-shell { width: 100%; height: 100%; position: relative; background: #d8ccb1; }
-
-.intro-banner, .top-nav, .station-panel, .mobile-pad {
-  background: rgba(250, 246, 236, 0.86);
-  border: 1px solid rgba(47, 50, 41, 0.15);
-  backdrop-filter: blur(4px);
-}
-
+.intro-banner, .top-nav, .station-panel, .mobile-pad, .section-panel { background: rgba(250,246,236,.88); border: 1px solid rgba(47,50,41,.15); backdrop-filter: blur(4px); }
 .intro-banner { position: absolute; left: 18px; top: 16px; max-width: 450px; padding: 12px 14px; border-radius: 12px; }
-.formula { margin: 0; letter-spacing: 0.12em; font-weight: 600; }
+.formula { margin: 0; letter-spacing: .12em; font-weight: 600; }
 .intro-banner h1 { margin: 4px 0; font-size: 1.6rem; }
 .intro-banner p { margin: 0; }
-
 .top-nav { position: absolute; right: 18px; top: 16px; display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 10px; }
-.top-nav a, .top-nav button, .station-panel button, .mobile-pad button {
-  border: 1px solid rgba(47, 50, 41, 0.3); padding: 6px 10px; border-radius: 8px; background: #f0eadf;
-}
-.station-panel { position: absolute; left: 18px; bottom: 16px; width: min(420px, calc(100% - 36px)); border-radius: 12px; padding: 14px; }
-.station-panel h2 { margin: 4px 0 8px; }
-.station-panel p { margin: 0 0 8px; }
+.top-nav a, .top-nav button, .station-panel button, .mobile-pad button, .section-panel button { border: 1px solid rgba(47,50,41,.3); padding: 6px 10px; border-radius: 8px; background: #f0eadf; cursor:pointer; }
+.station-panel { position: absolute; left: 18px; bottom: 16px; width: min(450px, calc(100% - 36px)); border-radius: 12px; padding: 14px; }
 .station-panel ul { margin: 0 0 10px 18px; }
 .station-panel .muted, .station-panel .id { color: #555d4f; }
-
-.node-label { background: rgba(250, 246, 236, 0.95); border-radius: 999px; padding: 2px 7px; font-size: 12px; font-weight: 700; }
-.tour-chip { padding: 8px 12px; border-radius: 999px; background: rgba(240, 234, 223, 0.95); font-weight: 600; }
-
+.gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
+.gallery img { width: 100%; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(47,50,41,.2); }
+.section-panel { position: absolute; right: 18px; bottom: 16px; width: min(390px, calc(100% - 36px)); padding: 14px; border-radius: 12px; }
+.node-label { background: rgba(250,246,236,.95); border-radius: 999px; padding: 2px 7px; font-size: 12px; font-weight: 700; }
+.tour-chip { padding: 8px 12px; border-radius: 999px; background: rgba(240,234,223,.95); font-weight: 600; }
 .mobile-pad { position: absolute; right: 14px; bottom: 14px; border-radius: 12px; padding: 8px; display: none; }
 .mobile-pad > div { display: flex; gap: 8px; margin: 6px 0; justify-content: center; }
 .mobile-pad button { width: 44px; height: 44px; }
-
-@media (max-width: 760px) {
-  .intro-banner { max-width: 88%; }
-  .top-nav { top: auto; bottom: 12px; left: 12px; right: auto; flex-wrap: wrap; width: 58%; }
-  .mobile-pad { display: block; }
-}
-
-.scene-loading {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle at 30% 20%, #e6dcc5, #cfbfa1);
-  color: #4f5647;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
+.scene-loading, .intro-sequence { position: absolute; inset: 0; display: grid; place-items: center; }
+.scene-loading { background: radial-gradient(circle at 30% 20%, #e6dcc5, #cfbfa1); color: #4f5647; font-weight: 600; letter-spacing: .04em; }
+.intro-sequence { z-index: 12; background: radial-gradient(circle at 50% 25%, rgba(229,219,197,.82), rgba(178,163,132,.72)); text-align: center; padding: 20px; }
+.intro-sequence-main { margin: 0; font-size: clamp(2.2rem, 8vw, 5rem); letter-spacing: .14em; color: #3d4336; font-weight: 700; }
+.intro-sequence-sub { margin: 0; max-width: 680px; font-size: clamp(1.1rem, 3.2vw, 2rem); color: #41483b; line-height: 1.45; font-weight: 500; }
+@media (max-width:760px){ .intro-banner{max-width:88%;} .top-nav{top:auto;bottom:12px;left:12px;right:auto;flex-wrap:wrap;width:58%;} .mobile-pad{display:block;} .section-panel{left:18px;right:auto;bottom:120px;} }
