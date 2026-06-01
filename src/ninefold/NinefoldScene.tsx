@@ -15,35 +15,15 @@ type Props = {
   moveDir: MoveDir | null;
 };
 
-function CameraRig({ focus, moveDir }: { focus: Station | null; moveDir: MoveDir | null }) {
+function GuidedCamera({ focus }: { focus: Station | null }) {
   const { camera } = useThree();
   const offset = useRef(new THREE.Vector3(11, 8, 11));
-  const freeTarget = useRef(new THREE.Vector3(0, 0.6, 0));
-  const keys = useRef<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const kd = (e: KeyboardEvent) => (keys.current[e.key.toLowerCase()] = true);
-    const ku = (e: KeyboardEvent) => (keys.current[e.key.toLowerCase()] = false);
-    window.addEventListener("keydown", kd);
-    window.addEventListener("keyup", ku);
-    return () => {
-      window.removeEventListener("keydown", kd);
-      window.removeEventListener("keyup", ku);
-    };
-  }, []);
 
   useFrame((_, dt) => {
-    const speed = 8 * dt;
-    if (moveDir === "up" || keys.current.w) freeTarget.current.z -= speed;
-    if (moveDir === "down" || keys.current.s) freeTarget.current.z += speed;
-    if (moveDir === "left" || keys.current.a) freeTarget.current.x -= speed;
-    if (moveDir === "right" || keys.current.d) freeTarget.current.x += speed;
-
-    freeTarget.current.x = THREE.MathUtils.clamp(freeTarget.current.x, -24, 24);
-    freeTarget.current.z = THREE.MathUtils.clamp(freeTarget.current.z, -24, 24);
-
-    const target = focus ? new THREE.Vector3(...focus.position) : freeTarget.current;
-    camera.position.lerp(target.clone().add(offset.current), 1 - Math.exp(-2.4 * dt));
+    if (!focus) return;
+    const target = new THREE.Vector3(...focus.position);
+    const desired = target.clone().add(offset.current);
+    camera.position.lerp(desired, 1 - Math.exp(-2.4 * dt));
     camera.lookAt(target.x, target.y + 0.8, target.z);
   });
 
@@ -70,16 +50,14 @@ function Environment({ onGroundClick }: { onGroundClick: (p: THREE.Vector3) => v
         <ringGeometry args={[12, 12.8, 96]} />
         <meshStandardMaterial color="#b7ab8b" roughness={1} />
       </mesh>
-      <mesh position={[-14, 0.2, 12]}><boxGeometry args={[5, 0.4, 3]} /><meshStandardMaterial color="#9c7a5b" roughness={0.95} /></mesh>
-      <mesh position={[14, 0.04, -12]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[3.1, 28]} /><meshStandardMaterial color="#79a8b8" roughness={0.5} metalness={0.1} /></mesh>
-      <mesh position={[-16, 1.2, -15]}><boxGeometry args={[0.6, 2.4, 10]} /><meshStandardMaterial color="#9b8b70" /></mesh>
-      <mesh position={[-12, 1.2, -15]}><boxGeometry args={[0.6, 2.4, 10]} /><meshStandardMaterial color="#9b8b70" /></mesh>
+
     </>
   );
 }
 
-export default function NinefoldScene({ stations, selected, onSelect, guided, moveDir }: Props) {
+export default function NinefoldScene({ stations, selected, onSelect, guided }: Props) {
   const [step, setStep] = useState(0);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const ordered = useMemo(() => stations, [stations]);
 
   useEffect(() => {
@@ -97,17 +75,30 @@ export default function NinefoldScene({ stations, selected, onSelect, guided, mo
       <ambientLight intensity={0.45} />
       <directionalLight castShadow intensity={1.2} position={[12, 20, 6]} shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
       <Suspense fallback={null}><Environment onGroundClick={() => onSelect(null)} /></Suspense>
-      {ordered.map((station) => (
-        <group key={station.id} position={station.position} onClick={() => onSelect(station)}>
-          <mesh castShadow receiveShadow>
-            <cylinderGeometry args={[0.55, 0.6, 1.2, 16]} />
-            <meshStandardMaterial color={focus?.id === station.id ? "#d9c8a9" : station.category === "places" ? "#baa17d" : station.category === "mind" ? "#8f9770" : "#7f8b73"} roughness={0.9} />
-          </mesh>
-          <Html position={[0, 1.1, 0]} center distanceFactor={18}><div className="node-label">{station.id}</div></Html>
-        </group>
-      ))}
-      <CameraRig focus={focus ?? null} moveDir={guided ? null : moveDir} />
-      <OrbitControls enabled={!guided} enablePan={false} minDistance={10} maxDistance={28} target={new THREE.Vector3(0, 1, 0)} />
+
+      {ordered.map((station) => {
+        const active = focus?.id === station.id || hoveredId === station.id;
+        return (
+          <group
+            key={station.id}
+            position={station.position}
+            onPointerEnter={() => setHoveredId(station.id)}
+            onPointerLeave={() => setHoveredId((curr) => (curr === station.id ? null : curr))}
+            onClick={() => onSelect(station)}
+          >
+            <mesh castShadow receiveShadow>
+              <cylinderGeometry args={[0.55, 0.6, 1.2, 16]} />
+              <meshStandardMaterial color={active ? "#d9c8a9" : station.category === "places" ? "#baa17d" : station.category === "mind" ? "#8f9770" : "#7f8b73"} roughness={0.9} />
+            </mesh>
+            <Html position={[0, 1.2, 0]} center distanceFactor={16}>
+              <div className="node-label">{station.title}</div>
+            </Html>
+          </group>
+        );
+      })}
+
+      {(guided || selected) && <GuidedCamera focus={focus ?? null} />}
+      <OrbitControls enabled={!guided} makeDefault enablePan minDistance={10} maxDistance={28} target={new THREE.Vector3(0, 1, 0)} />
       {guided && <Html position={[0, 11, 0]} center><div className="tour-chip">Guided Tour Active</div></Html>}
     </Canvas>
   );

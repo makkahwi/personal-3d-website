@@ -15,7 +15,8 @@ body, html, #root { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 .gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
 .gallery img { width: 100%; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(47,50,41,.2); }
 .section-panel { position: absolute; right: 18px; bottom: 16px; width: min(390px, calc(100% - 36px)); padding: 14px; border-radius: 12px; }
-.node-label { background: rgba(250,246,236,.95); border-radius: 999px; padding: 2px 7px; font-size: 12px; font-weight: 700; }
+.node-label { background: rgba(250,246,236,.95); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; border: 1px solid rgba(47,50,41,.25); }
+.feature-label { background: rgba(240,234,223,.9); border: 1px solid rgba(47,50,41,.25); border-radius: 7px; padding: 3px 7px; font-size: 11px; }
 .tour-chip { padding: 8px 12px; border-radius: 999px; background: rgba(240,234,223,.95); font-weight: 600; }
 .mobile-pad { position: absolute; right: 14px; bottom: 14px; border-radius: 12px; padding: 8px; display: none; }
 .mobile-pad > div { display: flex; gap: 8px; margin: 6px 0; justify-content: center; }

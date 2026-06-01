@@ -28,7 +28,6 @@ function App() {
       </Suspense>
 
       {introStage < 2 && <div className="intro-sequence">{introStage === 0 ? <p className="intro-sequence-main">3 × 3 = 9</p> : <p className="intro-sequence-sub">A life shaped by three places, three fields of thought, and three careers.</p>}</div>}
-
       <div className="intro-banner"><p className="formula">3 × 3 = 9</p><h1>Ninefold Garden</h1><p>A life map of intentional transitions.</p></div>
 
       <nav className="top-nav">
@@ -41,19 +40,7 @@ function App() {
 
       {!guided && <div className="mobile-pad"><button onMouseDown={() => setMoveDir("up")} onMouseUp={() => setMoveDir(null)} onTouchStart={() => setMoveDir("up")} onTouchEnd={() => setMoveDir(null)}>↑</button><div><button onMouseDown={() => setMoveDir("left")} onMouseUp={() => setMoveDir(null)} onTouchStart={() => setMoveDir("left")} onTouchEnd={() => setMoveDir(null)}>←</button><button onMouseDown={() => setMoveDir("right")} onMouseUp={() => setMoveDir(null)} onTouchStart={() => setMoveDir("right")} onTouchEnd={() => setMoveDir(null)}>→</button></div><button onMouseDown={() => setMoveDir("down")} onMouseUp={() => setMoveDir(null)} onTouchStart={() => setMoveDir("down")} onTouchEnd={() => setMoveDir(null)}>↓</button></div>}
 
-      {selected && (
-        <aside className="station-panel">
-          <p className="id">{selected.id} · {selected.years}</p>
-          <h2>{selected.title}</h2>
-          <p>{selected.summary}</p>
-          <p className="muted">Key lessons</p>
-          <ul>{selected.lessons.map((lesson) => <li key={lesson}>{lesson}</li>)}</ul>
-          <p className="muted">Gallery</p>
-          <div className="gallery">{selected.images.map((src) => <img key={src} src={src} alt={selected.title} />)}</div>
-          <button onClick={() => setSelected(null)}>Close</button>
-        </aside>
-      )}
-
+      {selected && <aside className="station-panel"><p className="id">{selected.id} · {selected.years}</p><h2>{selected.title}</h2><p>{selected.summary}</p><p className="muted">Key lessons</p><ul>{selected.lessons.map((lesson) => <li key={lesson}>{lesson}</li>)}</ul><p className="muted">Gallery</p><div className="gallery">{selected.images.map((src) => <img key={src} src={src} alt={selected.title} />)}</div><button onClick={() => setSelected(null)}>Close</button></aside>}
       {activeSection && <aside className="section-panel"><h3>{activeSection[0].toUpperCase() + activeSection.slice(1)}</h3><p>{sections[activeSection]}</p><button onClick={() => setActiveSection(null)}>Close</button></aside>}
     </div>
   );
