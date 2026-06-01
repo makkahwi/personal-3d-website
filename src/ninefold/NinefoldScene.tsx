@@ -30,6 +30,73 @@ function GuidedCamera({ focus }: { focus: Station | null }) {
   return null;
 }
 
+function HobbyElements() {
+  return (
+    <>
+      <group position={[-4.2, 0, 1.8]}>
+        <mesh position={[0, 0.65, 0]} castShadow>
+          <boxGeometry args={[2.8, 0.14, 1.6]} />
+          <meshStandardMaterial color="#9a7b59" />
+        </mesh>
+        <mesh position={[-1.2, 0.32, -0.65]} castShadow><cylinderGeometry args={[0.08, 0.08, 0.64, 10]} /><meshStandardMaterial color="#6f573d" /></mesh>
+        <mesh position={[1.2, 0.32, -0.65]} castShadow><cylinderGeometry args={[0.08, 0.08, 0.64, 10]} /><meshStandardMaterial color="#6f573d" /></mesh>
+        <mesh position={[-1.2, 0.32, 0.65]} castShadow><cylinderGeometry args={[0.08, 0.08, 0.64, 10]} /><meshStandardMaterial color="#6f573d" /></mesh>
+        <mesh position={[1.2, 0.32, 0.65]} castShadow><cylinderGeometry args={[0.08, 0.08, 0.64, 10]} /><meshStandardMaterial color="#6f573d" /></mesh>
+
+        <mesh position={[-0.8, 0.78, -0.15]} castShadow>
+          <cylinderGeometry args={[0.24, 0.24, 0.22, 16]} />
+          <meshStandardMaterial color="#4d4f52" metalness={0.2} roughness={0.65} />
+        </mesh>
+        <mesh position={[-0.8, 0.66, -0.15]} castShadow>
+          <cylinderGeometry args={[0.35, 0.35, 0.08, 16]} />
+          <meshStandardMaterial color="#2f3338" roughness={0.8} />
+        </mesh>
+        <mesh position={[-0.8, 0.58, -0.15]} castShadow>
+          <boxGeometry args={[0.5, 0.12, 0.5]} />
+          <meshStandardMaterial color="#181c1f" roughness={0.9} />
+        </mesh>
+
+        <mesh position={[0.75, 0.74, 0.2]} castShadow>
+          <boxGeometry args={[0.62, 0.05, 0.62]} />
+          <meshStandardMaterial color="#d8cfb8" />
+        </mesh>
+        <mesh position={[0.75, 0.77, 0.2]} castShadow>
+          <boxGeometry args={[0.64, 0.01, 0.64]} />
+          <meshStandardMaterial color="#3f3429" />
+        </mesh>
+      </group>
+
+      <group position={[4.8, 0, 2.4]} rotation={[0, -0.6, 0]}>
+        <mesh position={[-0.7, 0.42, 0]} castShadow><torusGeometry args={[0.38, 0.09, 10, 20]} /><meshStandardMaterial color="#1c1f22" /></mesh>
+        <mesh position={[0.7, 0.42, 0]} castShadow><torusGeometry args={[0.38, 0.09, 10, 20]} /><meshStandardMaterial color="#1c1f22" /></mesh>
+        <mesh position={[0, 0.68, 0]} castShadow><boxGeometry args={[1.6, 0.14, 0.18]} /><meshStandardMaterial color="#323a40" /></mesh>
+        <mesh position={[0.2, 0.86, 0]} castShadow><boxGeometry args={[0.7, 0.18, 0.26]} /><meshStandardMaterial color="#5f3f32" /></mesh>
+      </group>
+
+      <mesh position={[2.6, 0.28, -3.2]} castShadow>
+        <sphereGeometry args={[0.28, 16, 16]} />
+        <meshStandardMaterial color="#e9d16b" />
+      </mesh>
+
+
+      <group position={[0, 0, -4.6]}>
+        <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <boxGeometry args={[2.8, 0.08, 1.8]} />
+          <meshStandardMaterial color="#8ea3a8" roughness={0.95} />
+        </mesh>
+        <mesh position={[0, 0.06, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[2.35, 1.35]} />
+          <meshStandardMaterial color="#77a9b8" roughness={0.35} metalness={0.08} />
+        </mesh>
+      </group>
+
+      <Html position={[0, 1.6, 3.2]} center>
+        <div className="feature-label">Hobbies: Cooking · Chess · Motorcycling · Volleyball</div>
+      </Html>
+    </>
+  );
+}
+
 function Environment({ onGroundClick }: { onGroundClick: (p: THREE.Vector3) => void }) {
   const clickGround = (e: ThreeEvent<MouseEvent>) => onGroundClick(e.point);
   return (
@@ -50,7 +117,7 @@ function Environment({ onGroundClick }: { onGroundClick: (p: THREE.Vector3) => v
         <ringGeometry args={[12, 12.8, 96]} />
         <meshStandardMaterial color="#b7ab8b" roughness={1} />
       </mesh>
-
+      <HobbyElements />
     </>
   );
 }
