@@ -16,6 +16,7 @@ export type CountryMemory = {
   name: string;
   flag: string;
   landmarkModelId: string;
+  coordinates: readonly [number, number];
   yearVisited?: number;
   category: Extract<LifeAspectCategory, "travel">;
 };
@@ -25,6 +26,8 @@ export type Hobby = {
   label: string;
   category: LifeAspectCategory;
   sceneObjectId: string;
+  image?: string;
+  visualHint?: string;
   note?: string;
 };
 
@@ -239,6 +242,7 @@ export const personalProfile = {
       name: "Malaysia",
       flag: "🇲🇾",
       landmarkModelId: "twin-towers",
+      coordinates: [101.6869, 3.139],
       yearVisited: 2021,
       category: "travel",
     },
@@ -247,6 +251,7 @@ export const personalProfile = {
       name: "Thailand",
       flag: "🇹🇭",
       landmarkModelId: "temple-chedi",
+      coordinates: [100.5018, 13.7563],
       yearVisited: 2019,
       category: "travel",
     },
@@ -255,6 +260,7 @@ export const personalProfile = {
       name: "Sri Lanka",
       flag: "🇱🇰",
       landmarkModelId: "stupa",
+      coordinates: [79.8612, 6.9271],
       yearVisited: 2018,
       category: "travel",
     },
@@ -263,6 +269,7 @@ export const personalProfile = {
       name: "India",
       flag: "🇮🇳",
       landmarkModelId: "taj-dome",
+      coordinates: [77.209, 28.6139],
       yearVisited: 2020,
       category: "travel",
     },
@@ -271,6 +278,7 @@ export const personalProfile = {
       name: "Qatar",
       flag: "🇶🇦",
       landmarkModelId: "doha-cubes",
+      coordinates: [51.531, 25.2854],
       yearVisited: 2010,
       category: "travel",
     },
@@ -279,6 +287,7 @@ export const personalProfile = {
       name: "Saudi Arabia",
       flag: "🇸🇦",
       landmarkModelId: "palm-and-tower",
+      coordinates: [39.8579, 21.3891],
       yearVisited: 2024,
       category: "travel",
     },
@@ -287,6 +296,7 @@ export const personalProfile = {
       name: "Jordan",
       flag: "🇯🇴",
       landmarkModelId: "petra-facade",
+      coordinates: [35.9106, 31.9539],
       category: "travel",
     },
     {
@@ -294,6 +304,7 @@ export const personalProfile = {
       name: "Syria",
       flag: "🇸🇾",
       landmarkModelId: "citadel-arch",
+      coordinates: [36.2765, 33.5138],
       yearVisited: 2026,
       category: "travel",
     },
@@ -302,6 +313,7 @@ export const personalProfile = {
       name: "Lebanon",
       flag: "🇱🇧",
       landmarkModelId: "raouche-rocks",
+      coordinates: [35.5018, 33.8938],
       yearVisited: 2008,
       category: "travel",
     },
@@ -310,6 +322,7 @@ export const personalProfile = {
       name: "Turkey",
       flag: "🇹🇷",
       landmarkModelId: "hagia-sophia",
+      coordinates: [28.9784, 41.0082],
       yearVisited: 2025,
       category: "travel",
     },
@@ -318,6 +331,7 @@ export const personalProfile = {
       name: "Egypt",
       flag: "🇪🇬",
       landmarkModelId: "pyramid-and-obelisk",
+      coordinates: [31.2357, 30.0444],
       yearVisited: 2023,
       category: "travel",
     },
@@ -329,72 +343,113 @@ export const personalProfile = {
       label: "Cooking",
       category: "food",
       sceneObjectId: "cooking-module",
+      image:
+        "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Kitchen worktop",
     },
     {
       id: "chess",
       label: "Chess",
       category: "games",
       sceneObjectId: "chess-module",
+      image:
+        "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Chessboard",
     },
     {
       id: "pc",
       label: "PC",
       category: "technology",
       sceneObjectId: "pc-module",
+      image:
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Desktop setup",
     },
     {
       id: "motorcycle",
       label: "Motorcycle",
       category: "mobility",
       sceneObjectId: "motorcycle",
+      image:
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Road ride",
     },
     {
       id: "swimming",
       label: "Swimming",
       category: "fitness",
       sceneObjectId: "swimming-pool",
+      image:
+        "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Pool water",
     },
     {
       id: "walking",
       label: "Walking",
       category: "fitness",
       sceneObjectId: "walking-track",
+      image:
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Walking path",
     },
     {
       id: "volleyball",
       label: "Volleyball",
       category: "sports",
       sceneObjectId: "volleyball-court",
+      image:
+        "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Volleyball court",
     },
     {
       id: "movies",
       label: "Movies",
       category: "media",
       sceneObjectId: "wall-projector",
+      image:
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Cinema seats",
       note: "Represented by the projector video wall.",
     },
   ] satisfies Hobby[],
 
   culturalLibrary: {
     books: [
-      { id: "", title: "الدولة المستحيلة", author: "وائل حلاق" },
+      {
+        id: "",
+        title: "الدولة المستحيلة",
+        author: "وائل حلاق",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%88%D9%84%D8%A9%20%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AD%D9%8A%D9%84%D8%A9-L.jpg",
+      },
       {
         id: "",
         title: "الدين والعلمانية في سياق تاريخي",
         author: "عزمي بشارة",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%8A%D9%86%20%D9%88%D8%A7%D9%84%D8%B9%D9%84%D9%85%D8%A7%D9%86%D9%8A%D8%A9%20%D9%81%D9%8A%20%D8%B3%D9%8A%D8%A7%D9%82%20%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE%D9%8A-L.jpg",
       },
       {
         id: "",
         title: "الديمقراطية وحقوق الإنسان في الإسلام",
         author: "راشد الغنوشي",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%8A%D9%85%D9%82%D8%B1%D8%A7%D8%B7%D9%8A%D8%A9%20%D9%88%D8%AD%D9%82%D9%88%D9%82%20%D8%A7%D9%84%D8%A5%D9%86%D8%B3%D8%A7%D9%86%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85-L.jpg",
       },
-      { id: "", title: "معضلة المالاي", author: "مهاتير محمد" },
+      {
+        id: "",
+        title: "معضلة المالاي",
+        author: "مهاتير محمد",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/%D9%85%D8%B9%D8%B6%D9%84%D8%A9%20%D8%A7%D9%84%D9%85%D8%A7%D9%84%D8%A7%D9%8A-L.jpg",
+      },
     ] satisfies CulturalItem[],
     documentaries: [
       {
         id: "",
         title: "الحروب الصليبية",
         link: "https://www.youtube.com/watch?v=m3mjPiwd5tU&list=PLmrET10kAE97RuC47XUMWxQ9BlXB_9QDB",
+        posterImage: "https://img.youtube.com/vi/m3mjPiwd5tU/hqdefault.jpg",
       },
       { id: "", title: "", link: "" },
       { id: "", title: "", link: "" },
@@ -405,43 +460,140 @@ export const personalProfile = {
         title: "Knives Out",
         link: "https://www.youtube.com/watch?v=qGqiHJTsRkQ",
         note: "2019",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Knives_Out_poster.jpeg",
       },
-      { id: "", title: "Darkest Hour", note: "2017" },
-      { id: "", title: "Detained", note: "2024" },
-      { id: "", title: "Game Change", note: "2012" },
-      { id: "", title: "Jumanji", note: "2017" },
-      { id: "", title: "Now You See Me", note: "2013" },
-      { id: "", title: "Home Alone", note: "1990" },
-      { id: "", title: "Split", note: "2016" },
-      { id: "", title: "The Fault In Our Stars", note: "2014" },
-      { id: "", title: "The Hitman's Bodyguard", note: "2017" },
-      { id: "", title: "The Irishman", note: "2019" },
-      { id: "", title: "The Shawshank Redemption", note: "1994" },
-      { id: "", title: "The Social Network", note: "2010" },
-      { id: "", title: "Oppenheimer", note: "2023" },
-      { id: "", title: "Pain Hustlers", note: "2023" },
+      {
+        id: "",
+        title: "Darkest Hour",
+        note: "2017",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Darkest_Hour_poster.png",
+      },
+      {
+        id: "",
+        title: "Detained",
+        note: "2024",
+        posterImage:
+          "https://image.tmdb.org/t/p/w500/4f9TFrJzI3eou29WnhSx8zEXnH8.jpg",
+      },
+      {
+        id: "",
+        title: "Game Change",
+        note: "2012",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_poster.jpg",
+      },
+      {
+        id: "",
+        title: "Jumanji",
+        note: "2017",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Jumanji_Welcome_to_the_Jungle.png",
+      },
+      {
+        id: "",
+        title: "Now You See Me",
+        note: "2013",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Now_You_See_Me_Poster.jpg",
+      },
+      {
+        id: "",
+        title: "Home Alone",
+        note: "1990",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Home_alone_poster.jpg",
+      },
+      {
+        id: "",
+        title: "Split",
+        note: "2016",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Split_(2017_film).jpg",
+      },
+      {
+        id: "",
+        title: "The Fault In Our Stars",
+        note: "2014",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(film).jpg",
+      },
+      {
+        id: "",
+        title: "The Hitman's Bodyguard",
+        note: "2017",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Hitman's_Bodyguard_poster.png",
+      },
+      {
+        id: "",
+        title: "The Irishman",
+        note: "2019",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Irishman_poster.jpg",
+      },
+      {
+        id: "",
+        title: "The Shawshank Redemption",
+        note: "1994",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/ShawshankRedemptionMoviePoster.jpg",
+      },
+      {
+        id: "",
+        title: "The Social Network",
+        note: "2010",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Social_Network_film_poster.png",
+      },
+      {
+        id: "",
+        title: "Oppenheimer",
+        note: "2023",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Oppenheimer_(film).jpg",
+      },
+      {
+        id: "",
+        title: "Pain Hustlers",
+        note: "2023",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_Hustlers_poster.jpg",
+      },
       {
         id: "",
         title: "True Memoirs Of an International Assassin",
         note: "2016",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/True_Memoirs_of_an_International_Assassin.png",
       },
-      { id: "", title: "Yes Day", note: "2021" },
+      {
+        id: "",
+        title: "Yes Day",
+        note: "2021",
+        posterImage:
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Yes_Day_film_poster.png",
+      },
     ] satisfies CulturalItem[],
     podcasts: [
       {
         id: "",
         title: "القرآن والحياة - نايف بن نهار",
         link: "https://www.youtube.com/watch?v=Pfj4niPP0DY",
+        posterImage: "https://img.youtube.com/vi/Pfj4niPP0DY/hqdefault.jpg",
       },
       {
         id: "",
         title: "Financial Literacy",
         link: "https://www.youtube.com/watch?v=V360AygOv7A",
+        posterImage: "https://img.youtube.com/vi/V360AygOv7A/hqdefault.jpg",
       },
       {
         id: "",
         title: "Barack Obama - Hasan Minhaj",
         link: "https://www.youtube.com/watch?v=jAYVKZSWXhY",
+        posterImage: "https://img.youtube.com/vi/jAYVKZSWXhY/hqdefault.jpg",
       },
     ] satisfies CulturalItem[],
     programs: [
@@ -449,40 +601,70 @@ export const personalProfile = {
         id: "",
         title: "Jimmy Fallon",
         link: "https://www.youtube.com/@fallontonight",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/22/57388.jpg",
       },
       {
         id: "",
         title: "المخبر الاقتصادي",
         link: "https://www.youtube.com/@MokhbirEqtisadi",
+        posterImage: "https://unavatar.io/youtube/MokhbirEqtisadi",
       },
       {
         id: "",
         title: "Zeteo - Mehdi Hasan",
         link: "https://www.youtube.com/@zeteo",
+        posterImage: "https://unavatar.io/youtube/zeteo",
       },
       {
         id: "",
         title: "بدون ورق",
         link: "https://www.youtube.com/@BidonWaraq",
+        posterImage: "https://unavatar.io/youtube/BidonWaraq",
       },
     ] satisfies CulturalItem[],
     series: [
       {
         id: "",
         title: "House Of Cards",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/169/424482.jpg",
       },
       {
         id: "",
         title: "The Mentalist",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/0/1239.jpg",
       },
       {
         id: "",
         title: "ضيعة ضايعة",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/472/1180565.jpg",
       },
-      { id: "", title: "الخربة" },
-      { id: "", title: "الكبير أوي" },
-      { id: "", title: "البلاتوه - أحمد أمين" },
-      { id: "", title: "الصفارة - أحمد أمين" },
+      {
+        id: "",
+        title: "الخربة",
+        posterImage: "https://i.ibb.co/MkWs0C6/image.jpg",
+      },
+      {
+        id: "",
+        title: "الكبير أوي",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/506/1267310.jpg",
+      },
+      {
+        id: "",
+        title: "البلاتوه - أحمد أمين",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/297/742636.jpg",
+      },
+      {
+        id: "",
+        title: "الصفارة - أحمد أمين",
+        posterImage:
+          "https://static.tvmaze.com/uploads/images/original_untouched/453/1134036.jpg",
+      },
     ] satisfies CulturalItem[],
     note: "Titles to be filled from the owner's actual read/watch history; keep this list factual and curated.",
   },
