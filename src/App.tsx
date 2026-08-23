@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { geoGraticule10, geoNaturalEarth1, geoPath } from "d3-geo";
+
 import type { FeatureCollection, Polygon } from "geojson";
 import * as React from "react";
 import * as THREE from "three";
@@ -373,6 +374,94 @@ const slugLetters = (title: string) =>
     .map((word) => word[0])
     .join("");
 
+const lifestyleShortLabel = (label: string) =>
+  label
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("");
+
+const lifestyleMeta = (item: (typeof personalProfile.healthyLifestyle.items)[number]) => {
+  const years =
+    item.fromYear !== undefined
+      ? `${item.fromYear}-${item.toYear ?? "now"}`
+      : undefined;
+
+  return [years, item.cadence].filter(Boolean).join(" / ");
+};
+
+const lifestyleImages: Record<
+  (typeof personalProfile.healthyLifestyle.items)[number]["visualHint"],
+  string
+> = {
+  fasting:
+    "https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=900&q=80",
+  sleep:
+    "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=900&q=80",
+  sugar:
+    "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80",
+  vegan:
+    "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80",
+  nutritionist:
+    "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=900&q=80",
+  "weight-loss":
+    "https://images.unsplash.com/photo-1434596922112-19c563067271?auto=format&fit=crop&w=1200&q=80",
+  walking:
+    "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=80",
+};
+
+const HealthyLifestylePanel = () => {
+  const { healthyLifestyle } = personalProfile;
+  const featureItem =
+    healthyLifestyle.items.find((item) => item.visualHint === "weight-loss") ??
+    healthyLifestyle.items[0];
+  const supportItems = healthyLifestyle.items.filter(
+    (item) => item.id !== featureItem.id,
+  );
+
+  return (
+    <section className="healthy-lifestyle">
+      <div className="section-copy">
+        <p className="eyebrow">Healthy Lifestyle</p>
+        <h2>Care routines with a long memory.</h2>
+        <p>{healthyLifestyle.summary}</p>
+      </div>
+      <div className="lifestyle-system" aria-label="Healthy lifestyle habits">
+        <article
+          className="lifestyle-feature"
+          data-hint={featureItem.visualHint}
+          style={
+            {
+              "--lifestyle-image": `url("${lifestyleImages[featureItem.visualHint]}")`,
+            } as React.CSSProperties
+          }
+        >
+          <span>{lifestyleMeta(featureItem)}</span>
+          <strong>{featureItem.label}</strong>
+          <p>{featureItem.note}</p>
+        </article>
+        {supportItems.map((item) => (
+          <article
+            key={item.id}
+            className="lifestyle-node"
+            data-hint={item.visualHint}
+            style={
+              {
+                "--lifestyle-image": `url("${lifestyleImages[item.visualHint]}")`,
+              } as React.CSSProperties
+            }
+          >
+            <span>{lifestyleShortLabel(item.label)}</span>
+            <strong>{item.label}</strong>
+            <small>{lifestyleMeta(item)}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 type ShelfItem = {
   title: string;
   href?: string;
@@ -442,16 +531,6 @@ const App = () => {
             <h1>Three by three life map.</h1>
             <p>Study, work, and place. Three choices each.</p>
           </div>
-        </div>
-        <p className="intro">
-          A personal page for places, screens, books, hobbies, odd interests,
-          and the routes that shaped them.
-        </p>
-        <div className="hero-strip">
-          <span>{personalProfile.countries.length} countries</span>
-          <span>{personalProfile.hobbies.length} hobbies</span>
-          <span>{movieLinks.length} films</span>
-          <span>{library.books.length} books</span>
         </div>
       </section>
 
@@ -539,6 +618,8 @@ const App = () => {
         </div>
       </section>
 
+      <HealthyLifestylePanel />
+
       <section className="cinema-wall">
         <div className="section-copy">
           <p className="eyebrow">Cinema</p>
@@ -589,34 +670,36 @@ const App = () => {
                 <strong>{group.label}</strong>
               </header>
               <div className="shelf-line">
-                {group.items.map((item) =>
-                  item.href ? (
-                    <a
-                      key={item.title}
-                      href={item.href}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {item.posterImage ? (
-                        <img src={item.posterImage} alt="" loading="lazy" />
-                      ) : (
-                        <b>{slugLetters(item.title)}</b>
-                      )}
-                      <strong>{item.title}</strong>
-                      <span>{item.detail}</span>
-                    </a>
-                  ) : (
-                    <div key={item.title}>
-                      {item.posterImage ? (
-                        <img src={item.posterImage} alt="" loading="lazy" />
-                      ) : (
-                        <b>{slugLetters(item.title)}</b>
-                      )}
-                      <strong>{item.title}</strong>
-                      <span>{item.detail}</span>
-                    </div>
-                  ),
-                )}
+                {group.items
+                  .sort((a, b) => a.title.localeCompare(b.title))
+                  .map((item) =>
+                    item.href ? (
+                      <a
+                        key={item.title}
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {item.posterImage ? (
+                          <img src={item.posterImage} alt="" loading="lazy" />
+                        ) : (
+                          <b>{slugLetters(item.title)}</b>
+                        )}
+                        <strong>{item.title}</strong>
+                        <span>{item.detail}</span>
+                      </a>
+                    ) : (
+                      <div key={item.title}>
+                        {item.posterImage ? (
+                          <img src={item.posterImage} alt="" loading="lazy" />
+                        ) : (
+                          <b>{slugLetters(item.title)}</b>
+                        )}
+                        <strong>{item.title}</strong>
+                        <span>{item.detail}</span>
+                      </div>
+                    ),
+                  )}
               </div>
             </article>
           ))}

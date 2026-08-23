@@ -9,7 +9,8 @@ export type LifeAspectCategory =
   | "mobility"
   | "career"
   | "education"
-  | "social";
+  | "social"
+  | "health";
 
 export type CountryMemory = {
   id: string;
@@ -74,6 +75,23 @@ export type SocialAccount = {
   link?: string;
   engagement: "inactive" | "low" | "active";
   note: string;
+};
+
+export type HealthyLifestyleItem = {
+  id: string;
+  label: string;
+  fromYear?: number;
+  toYear?: number | "current";
+  cadence?: string;
+  note: string;
+  visualHint:
+    | "fasting"
+    | "sleep"
+    | "sugar"
+    | "vegan"
+    | "nutritionist"
+    | "weight-loss"
+    | "walking";
 };
 
 export type NineChoiceGroupId = "study" | "career" | "stays";
@@ -141,13 +159,15 @@ export const personalProfile = {
           {
             id: "secretariat-financial-management",
             label: "Secretariat and financial management",
-            detail: "Early professional phase covering secretariat and financial management roles.",
+            detail:
+              "Early professional phase covering secretariat and financial management roles.",
             outcome: "2008-2013",
           },
           {
             id: "graphic-design",
             label: "Graphic design",
-            detail: "A visual and creative phase before moving into web development.",
+            detail:
+              "A visual and creative phase before moving into web development.",
             outcome: "2013-2018",
           },
           {
@@ -424,6 +444,13 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "The 7 Habits of Highly Effective People",
+        author: "Stephen R. Covey",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/The%207%20Habits%20of%20Highly%20Effective%20People-L.jpg",
+      },
+      {
+        id: "",
         title: "الدين والعلمانية في سياق تاريخي",
         author: "عزمي بشارة",
         posterImage:
@@ -435,13 +462,6 @@ export const personalProfile = {
         author: "راشد الغنوشي",
         posterImage:
           "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%8A%D9%85%D9%82%D8%B1%D8%A7%D8%B7%D9%8A%D8%A9%20%D9%88%D8%AD%D9%82%D9%88%D9%82%20%D8%A7%D9%84%D8%A5%D9%86%D8%B3%D8%A7%D9%86%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85-L.jpg",
-      },
-      {
-        id: "",
-        title: "معضلة المالاي",
-        author: "مهاتير محمد",
-        posterImage:
-          "https://covers.openlibrary.org/b/title/%D9%85%D8%B9%D8%B6%D9%84%D8%A9%20%D8%A7%D9%84%D9%85%D8%A7%D9%84%D8%A7%D9%8A-L.jpg",
       },
     ] satisfies CulturalItem[],
     documentaries: [
@@ -475,14 +495,14 @@ export const personalProfile = {
         title: "Detained",
         note: "2024",
         posterImage:
-          "https://image.tmdb.org/t/p/w500/4f9TFrJzI3eou29WnhSx8zEXnH8.jpg",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Detained_film_poster.jpg",
       },
       {
         id: "",
         title: "Game Change",
         note: "2012",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_poster.jpg",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_2012_poster.jpg",
       },
       {
         id: "",
@@ -517,14 +537,14 @@ export const personalProfile = {
         title: "The Fault In Our Stars",
         note: "2014",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(film).jpg",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(Official_Film_Poster).png",
       },
       {
         id: "",
         title: "The Hitman's Bodyguard",
         note: "2017",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Hitman's_Bodyguard_poster.png",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/HitmansBodyguard.jpg",
       },
       {
         id: "",
@@ -559,14 +579,14 @@ export const personalProfile = {
         title: "Pain Hustlers",
         note: "2023",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_Hustlers_poster.jpg",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_hustlers_film_poster.jpg",
       },
       {
         id: "",
         title: "True Memoirs Of an International Assassin",
         note: "2016",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/True_Memoirs_of_an_International_Assassin.png",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/True_Memoirs_of_an_International_Assassin.jpg",
       },
       {
         id: "",
@@ -640,7 +660,7 @@ export const personalProfile = {
         id: "",
         title: "ضيعة ضايعة",
         posterImage:
-          "https://static.tvmaze.com/uploads/images/original_untouched/472/1180565.jpg",
+          "https://upload.wikimedia.org/wikipedia/ar/b/b5/%D9%84%D9%82%D8%B7%D8%A9_%D8%B4%D8%A7%D8%B1%D8%A9_%D9%85%D8%B3%D9%84%D8%B3%D9%84_%D8%B6%D9%8A%D8%B9%D8%A9_%D8%B6%D8%A7%D9%8A%D8%B9%D8%A9.jpeg?utm_source=ar.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
       },
       {
         id: "",
@@ -695,6 +715,68 @@ export const personalProfile = {
         note: "Account exists & updated occasionally.",
       },
     ] satisfies SocialAccount[],
+  },
+
+  healthyLifestyle: {
+    summary:
+      "Long-term personal care around fasting, sleep, diet, nutrition, weight, and movement.",
+    items: [
+      {
+        id: "monday-thursday-fasting",
+        label: "Mon and Thu fasting",
+        fromYear: 2012,
+        toYear: "current",
+        cadence: "Mon and Thu",
+        note: "Has been fasting Mon and Thu since 2012.",
+        visualHint: "fasting",
+      },
+      {
+        id: "early-sleep",
+        label: "Early sleep routine",
+        note: "Sleeps and gets up early as part of daily lifestyle care.",
+        visualHint: "sleep",
+      },
+      {
+        id: "reduced-sugar",
+        label: "Reduced sugar consumption",
+        fromYear: 2015,
+        toYear: "current",
+        note: "Reduced sugar consumption from 2015.",
+        visualHint: "sugar",
+      },
+      {
+        id: "adjusted-vegan-diet",
+        label: "Adjusted vegan diet",
+        fromYear: 2019,
+        toYear: 2023,
+        note: "Followed an adjusted vegan diet from 2019 to 2023.",
+        visualHint: "vegan",
+      },
+      {
+        id: "weekly-nutritionist",
+        label: "Weekly nutritionist visits",
+        fromYear: 2024,
+        toYear: "current",
+        cadence: "Weekly",
+        note: "Has been visiting a nutritionist weekly since 2024.",
+        visualHint: "nutritionist",
+      },
+      {
+        id: "almost-30kg-lost",
+        label: "Almost 30 kg lost",
+        fromYear: 2024,
+        toYear: "current",
+        note: "Lost almost 30 kg through health and nutrition care.",
+        visualHint: "weight-loss",
+      },
+      {
+        id: "alternate-day-walking",
+        label: "Walking exercise",
+        cadence: "Alternate days",
+        note: "Does walking exercise on alternate days.",
+        visualHint: "walking",
+      },
+    ] satisfies HealthyLifestyleItem[],
   },
 
   stays: [

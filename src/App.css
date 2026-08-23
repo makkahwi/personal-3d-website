@@ -495,6 +495,178 @@ footer p {
   margin-top: 5px;
 }
 
+.healthy-lifestyle {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.62fr) minmax(420px, 1.38fr);
+  gap: clamp(32px, 7vw, 96px);
+  align-items: center;
+  padding: 118px clamp(20px, 7vw, 116px);
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  background:
+    linear-gradient(135deg, rgba(4, 120, 87, 0.18), rgba(3, 7, 18, 0.72) 48%, rgba(15, 23, 42, 0.72)),
+    rgba(3, 7, 18, 0.7);
+  backdrop-filter: blur(18px);
+}
+
+.healthy-lifestyle h2 {
+  margin: 10px 0 0;
+  font-size: clamp(2.3rem, 6vw, 5.8rem);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+.lifestyle-system {
+  display: grid;
+  grid-template-columns: minmax(250px, 1.08fr) repeat(2, minmax(150px, 0.7fr));
+  grid-auto-rows: minmax(170px, auto);
+  gap: 12px;
+}
+
+.lifestyle-feature,
+.lifestyle-node {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background:
+    linear-gradient(180deg, rgba(3, 7, 18, 0.03), rgba(3, 7, 18, 0.2) 40%, rgba(3, 7, 18, 0.92)),
+    var(--lifestyle-image),
+    linear-gradient(135deg, rgba(20, 184, 166, 0.5), rgba(15, 23, 42, 0.8));
+  background-size: cover;
+  background-position: center;
+}
+
+.lifestyle-feature::before,
+.lifestyle-node::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+}
+
+.lifestyle-feature {
+  grid-row: span 2;
+  min-height: 420px;
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.lifestyle-feature::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 150px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 30px solid color-mix(in srgb, var(--node-color) 52%, transparent);
+  opacity: 0.82;
+}
+
+.lifestyle-feature > *,
+.lifestyle-node > * {
+  position: relative;
+  z-index: 1;
+}
+
+.lifestyle-node > span {
+  width: fit-content;
+  margin-bottom: auto;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(3, 7, 18, 0.58);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.lifestyle-feature > span {
+  width: fit-content;
+  margin-bottom: 18px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(20, 184, 166, 0.72);
+  color: #f0fdfa;
+  font-size: 0.8rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.lifestyle-feature strong {
+  display: block;
+  max-width: 520px;
+  color: #ffffff;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  line-height: 0.86;
+  letter-spacing: 0;
+}
+
+.lifestyle-feature p {
+  max-width: 410px;
+  margin: 14px 0 0;
+  color: #dbeafe;
+  font-size: 1rem;
+}
+
+.lifestyle-node strong {
+  display: block;
+  color: #f8fafc;
+  font-size: clamp(1.08rem, 1.6vw, 1.45rem);
+  line-height: 1;
+}
+
+.lifestyle-node small {
+  display: block;
+  min-height: 1.2em;
+  margin-top: 7px;
+  color: #dbeafe;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.lifestyle-node[data-hint="fasting"] {
+  --node-color: #38bdf8;
+}
+
+.lifestyle-node[data-hint="sleep"] {
+  --node-color: #818cf8;
+}
+
+.lifestyle-node[data-hint="sugar"] {
+  --node-color: #fb7185;
+}
+
+.lifestyle-node[data-hint="vegan"] {
+  --node-color: #22c55e;
+}
+
+.lifestyle-node[data-hint="nutritionist"] {
+  --node-color: #f59e0b;
+}
+
+.lifestyle-node[data-hint="weight-loss"] {
+  --node-color: #14b8a6;
+}
+
+.lifestyle-node[data-hint="walking"] {
+  --node-color: #a3e635;
+}
+
+.lifestyle-feature[data-hint="weight-loss"] {
+  --node-color: #14b8a6;
+}
+
 .poster-run {
   display: grid;
   grid-template-columns: repeat(6, minmax(112px, 1fr));
@@ -703,6 +875,7 @@ footer a {
   .travel-flow,
   .cinema-wall,
   .library-shelf,
+  .healthy-lifestyle,
   .two-lanes {
     grid-template-columns: 1fr;
   }
@@ -718,6 +891,15 @@ footer a {
   .hobby-board {
     grid-template-columns: repeat(2, minmax(160px, 1fr));
   }
+
+  .lifestyle-system {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lifestyle-feature {
+    grid-column: span 2;
+    min-height: 360px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -726,6 +908,7 @@ footer a {
   .travel-flow,
   .cinema-wall,
   .library-shelf,
+  .healthy-lifestyle,
   .hobby-ribbon,
   footer {
     padding-left: 18px;
@@ -758,6 +941,20 @@ footer a {
 
   .hobby-board {
     grid-template-columns: 1fr;
+  }
+
+  .lifestyle-system {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .lifestyle-feature {
+    grid-column: auto;
+    min-height: 320px;
+  }
+
+  .lifestyle-node {
+    min-height: 178px;
   }
 
   footer {
