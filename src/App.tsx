@@ -20,6 +20,7 @@ const FloatingGlobe = ({
     if (!ref.current) return;
     ref.current.rotation.y = state.clock.elapsedTime * 0.16;
     ref.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.4) * 0.08;
+    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.8) * 0.16;
   });
 
   return (
@@ -64,6 +65,7 @@ const CinemaObject = ({ position }: { position: [number, number, number] }) => {
   useFrame((state) => {
     if (!ref.current) return;
     ref.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.16;
+    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.72 + 2) * 0.14;
   });
 
   return (
@@ -101,6 +103,7 @@ const BooksObject = ({ position }: { position: [number, number, number] }) => {
     if (!ref.current) return;
     ref.current.rotation.y =
       -0.3 + Math.sin(state.clock.elapsedTime * 0.45) * 0.12;
+    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.64 + 4) * 0.13;
   });
 
   return (
@@ -139,6 +142,7 @@ const ChoiceObject = ({ position }: { position: [number, number, number] }) => {
   useFrame((state) => {
     if (!ref.current) return;
     ref.current.rotation.y = state.clock.elapsedTime * 0.12;
+    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.9 + 1) * 0.18;
   });
 
   return (
@@ -164,13 +168,70 @@ const ChoiceObject = ({ position }: { position: [number, number, number] }) => {
   );
 };
 
+const PlayfulOrbit = () => {
+  const ref = React.useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (!ref.current) return;
+    ref.current.rotation.z = state.clock.elapsedTime * 0.025;
+    ref.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.12) * 0.16;
+  });
+
+  return (
+    <group ref={ref}>
+      {Array.from({ length: 22 }).map((_, index) => {
+        const angle = (index / 22) * Math.PI * 2;
+        const radius = 4.4 + (index % 4) * 0.62;
+        const colors = ["#facc15", "#fb7185", "#22d3ee", "#a78bfa", "#4ade80"];
+        return (
+          <mesh
+            key={index}
+            position={[
+              Math.cos(angle) * radius,
+              Math.sin(angle) * radius * 0.62,
+              -1.4 - (index % 3) * 0.65,
+            ]}
+            rotation={[angle, angle * 0.5, 0]}
+          >
+            {index % 3 === 0 ? (
+              <torusGeometry args={[0.09, 0.025, 8, 18]} />
+            ) : (
+              <sphereGeometry args={[0.045 + (index % 4) * 0.012, 12, 8]} />
+            )}
+            <meshStandardMaterial
+              color={colors[index % colors.length]}
+              emissive={colors[index % colors.length]}
+              emissiveIntensity={0.8}
+            />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+};
+
+const CameraDrift = () => {
+  useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    state.camera.position.x = Math.sin(time * 0.12) * 0.24;
+    state.camera.position.y = Math.cos(time * 0.16) * 0.18;
+    state.camera.lookAt(0, 0, 0);
+  });
+  return null;
+};
+
 const Stage = () => (
   <div className="stage" aria-hidden="true">
     <Canvas camera={{ position: [0, 0, 8], fov: 42 }}>
-      <color attach="background" args={["#030712"]} />
-      <ambientLight intensity={0.42} />
-      <pointLight position={[-4, 3, 5]} intensity={2.6} color="#22d3ee" />
-      <pointLight position={[5, -1, 3]} intensity={1.7} color="#f97316" />
+      <color attach="background" args={["#071326"]} />
+      <fog attach="fog" args={["#071326", 9, 18]} />
+      <ambientLight intensity={0.68} />
+      <hemisphereLight args={["#67e8f9", "#4c1d95", 1.1]} />
+      <pointLight position={[-4, 3, 5]} intensity={3.2} color="#22d3ee" />
+      <pointLight position={[5, -1, 3]} intensity={2.4} color="#fb7185" />
+      <pointLight position={[0, 5, 1]} intensity={1.8} color="#facc15" />
+      <CameraDrift />
+      <PlayfulOrbit />
       <FloatingGlobe position={[3.25, 1.55, 0]} />
       <ChoiceObject position={[-3.9, -1.05, -0.4]} />
       <CinemaObject position={[3.25, -1.9, -0.3]} />

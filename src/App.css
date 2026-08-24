@@ -7,7 +7,7 @@ body,
 }
 
 body {
-  background: #030712;
+  background: #071326;
   color: #f8fafc;
 }
 
@@ -19,15 +19,15 @@ canvas {
   position: relative;
   overflow-x: hidden;
   background:
-    linear-gradient(180deg, rgba(3, 7, 18, 0.18), #030712 68%),
+    linear-gradient(180deg, rgba(7, 19, 38, 0.06), #030712 72%),
     radial-gradient(
       circle at 20% 12%,
-      rgba(34, 211, 238, 0.24),
+      rgba(34, 211, 238, 0.32),
       transparent 32%
     ),
     radial-gradient(
       circle at 88% 18%,
-      rgba(249, 115, 22, 0.16),
+      rgba(251, 113, 133, 0.24),
       transparent 30%
     ),
     #030712;
@@ -37,7 +37,7 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: 0;
-  opacity: 0.78;
+  opacity: 0.92;
   pointer-events: none;
 }
 
