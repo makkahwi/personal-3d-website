@@ -449,35 +449,35 @@ export const personalProfile = {
         title: "The 7 Habits of Highly Effective People",
         author: "Stephen R. Covey",
         posterImage:
-          "https://covers.openlibrary.org/b/title/The%207%20Habits%20of%20Highly%20Effective%20People-L.jpg",
+          "https://ak-asset.jarir.com/akeneo-prod/asset/f/8/9/7/f897adfede49dfa3310474e62bc5a917d02dd7bc_623123.jpg",
       },
       {
         id: "",
         title: "الدين والعلمانية في سياق تاريخي",
         author: "عزمي بشارة",
         posterImage:
-          "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%8A%D9%86%20%D9%88%D8%A7%D9%84%D8%B9%D9%84%D9%85%D8%A7%D9%86%D9%8A%D8%A9%20%D9%81%D9%8A%20%D8%B3%D9%8A%D8%A7%D9%82%20%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE%D9%8A-L.jpg",
+          "https://www.neelwafurat.com/images/lb/abookstore/covers/carton/240/240786.jpg",
       },
       {
         id: "",
         title: "Modernity and the Holocaust",
         author: "Zygmunt Bauman",
         posterImage:
-          "https://covers.openlibrary.org/b/title/Modernity_and_the_Holocaust.jpg",
+          "https://images.pangobooks.com/images/5a7db3d3-ce18-46f9-a4ed-f803332fdbbe?crop=1%3A1&quality=85&width=800",
       },
       {
         id: "",
         title: "How to attract people like a magnet",
         author: "Leil Lowndes",
         posterImage:
-          "https://covers.openlibrary.org/b/title/How_to_attract_people_like_a_magnet-L.jpg",
+          "https://images.blinkist.io/images/books/65112768195d9600088b22d4/1_1/470.jpg",
       },
       {
         id: "",
         title: "الديمقراطية وحقوق الإنسان في الإسلام",
         author: "راشد الغنوشي",
         posterImage:
-          "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%8A%D9%85%D9%82%D8%B1%D8%A7%D8%B7%D9%8A%D8%A9%20%D9%88%D8%AD%D9%82%D9%88%D9%82%20%D8%A7%D9%84%D8%A5%D9%86%D8%B3%D8%A7%D9%86%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85-L.jpg",
+          "https://www.neelwafurat.com/images/lb/abookstore/covers/normal/211/211675.jpg",
       },
     ] satisfies CulturalItem[],
     documentaries: [
