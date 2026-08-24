@@ -93,7 +93,8 @@ export type HealthyLifestyleItem = {
     | "vegan"
     | "nutritionist"
     | "weight-loss"
-    | "walking";
+    | "walking"
+    | "stimulants";
 };
 
 export type NineChoiceGroupId = "study" | "career" | "stays";
@@ -640,6 +641,50 @@ export const personalProfile = {
           "https://en.wikipedia.org/wiki/Special:Redirect/file/Yes_Day_film_poster.png",
       },
     ] satisfies CulturalItem[],
+    games: [
+      {
+        id: "chess",
+        title: "Chess",
+        note: "Strategy game",
+        posterImage:
+          "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=900&q=80",
+      },
+      {
+        id: "exploding-kittens",
+        title: "Exploding Kittens",
+        note: "Card game",
+        posterImage:
+          "https://bizweb.dktcdn.net/100/316/286/articles/exploding-kittens-board-game-box.jpeg?v=1671445100673",
+      },
+      {
+        id: "counter-strike-2",
+        title: "Counter-Strike 2",
+        note: "Tactical shooter",
+        posterImage:
+          "https://images.launchbox-app.com/d6b28509-ab50-4795-a2bb-a96bfb2a12b0.jpg",
+      },
+      {
+        id: "cities-skylines",
+        title: "Cities: Skylines",
+        note: "City-building game",
+        posterImage:
+          "https://image.jeuxvideo.com/medias-sm/142790/1427902224-6843-jaquette-avant.jpg",
+      },
+      {
+        id: "red-alert-3",
+        title: "Command & Conquer: Red Alert 3",
+        note: "Real-time strategy game",
+        posterImage:
+          "https://cdn.wikimg.net/en/strategywiki/images/f/f9/Command_%26_Conquer_Red_Alert_3_box.jpg",
+      },
+      {
+        id: "secret-hitler",
+        title: "Secret Hitler",
+        note: "Social deduction board game",
+        posterImage:
+          "https://www.boardgamebandit.ca/cdn/shop/products/secret-hitler-board-game_1024x1024.jpg?v=1610330614",
+      },
+    ] satisfies CulturalItem[],
     podcasts: [
       {
         id: "",
@@ -822,6 +867,13 @@ export const personalProfile = {
         cadence: "Alternate days",
         note: "Does walking exercise on alternate days.",
         visualHint: "walking",
+      },
+      {
+        id: "reduced-Stimulants",
+        label: "Reduced stimulants",
+        cadence: "No more than 1 cup of green tea per day",
+        note: "Has reduced consumption of stimulants.",
+        visualHint: "stimulants",
       },
     ] satisfies HealthyLifestyleItem[],
   },

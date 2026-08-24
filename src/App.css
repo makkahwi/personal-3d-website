@@ -770,6 +770,9 @@ footer p {
 .lifestyle-node[data-hint="weight-loss"] {
   --node-color: #14b8a6;
 }
+.lifestyle-node[data-hint="stimulants"] {
+  --node-color: #f97316;
+}
 
 .lifestyle-node[data-hint="walking"] {
   --node-color: #a3e635;
@@ -777,6 +780,9 @@ footer p {
 
 .lifestyle-feature[data-hint="weight-loss"] {
   --node-color: #14b8a6;
+}
+.lifestyle-feature[data-hint="stimulants"] {
+  --node-color: #f97316;
 }
 
 .poster-run {
@@ -806,7 +812,7 @@ footer p {
   background-size: cover, cover, cover;
   background-position: center, center, center;
   border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 6px;
+  border-radius: 10px;
   transform: translateY(var(--shift));
   transition:
     transform 180ms ease,
@@ -859,6 +865,129 @@ footer p {
   gap: 18px;
 }
 
+.content-zone {
+  display: grid;
+  gap: 28px;
+}
+
+.entertainment-zone {
+  background: linear-gradient(
+    145deg,
+    rgba(124, 45, 18, 0.22),
+    rgba(15, 23, 42, 0.38)
+  );
+}
+
+.entertainment-collection,
+.entertainment-shelves > .media-shelf {
+  border: 1px solid rgba(251, 146, 60, 0.2);
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    rgba(15, 23, 42, 0.88),
+    rgba(30, 20, 28, 0.72)
+  );
+  box-shadow: 0 20px 55px rgba(2, 6, 23, 0.2);
+}
+
+.movie-collection {
+  padding: 18px;
+}
+
+.collection-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.collection-heading span {
+  grid-row: span 2;
+  color: #fb923c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.collection-heading strong {
+  color: #f8fafc;
+  font-size: 1.15rem;
+}
+
+.collection-heading small {
+  color: #94a3b8;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.entertainment-shelves {
+  grid-column: 1 / -1;
+  width: 100%;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.entertainment-shelves > .media-shelf {
+  grid-column: span 6;
+}
+
+.entertainment-shelves .shelf-line {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.entertainment-shelves .shelf-line > div,
+.entertainment-shelves .shelf-line > a {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 0 0 10px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.entertainment-shelves .shelf-line > div:hover,
+.entertainment-shelves .shelf-line > a:hover,
+.poster-run a:hover {
+  transform: translateY(-4px);
+  background-color: rgba(255, 255, 255, 0.075);
+}
+
+.entertainment-shelves .shelf-line img {
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px 10px 0 0;
+  object-fit: cover;
+}
+
+.entertainment-shelves .shelf-line b {
+  width: 100%;
+  min-height: 180px;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px 10px 0 0;
+}
+
+.entertainment-shelves .shelf-line strong,
+.entertainment-shelves .shelf-line span {
+  padding: 0 10px;
+}
+
+.entertainment-shelves .shelf-line strong {
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+.entertainment-shelves .shelf-line span {
+  color: #94a3b8;
+  font-size: 0.7rem;
+}
+
 .media-shelf {
   padding: 16px;
   border-radius: 10px;
@@ -890,6 +1019,22 @@ footer p {
   font-size: 1.15rem;
 }
 
+.entertainment-shelves .collection-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  margin-bottom: 16px;
+}
+
+.entertainment-shelves .collection-heading span {
+  grid-row: span 2;
+  color: #fb923c;
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+}
+
 .media-shelf[data-kind="book"] {
   border-color: rgba(250, 204, 21, 0.18);
 }
@@ -908,6 +1053,10 @@ footer p {
 
 .media-shelf[data-kind="series"] {
   border-color: rgba(249, 115, 22, 0.22);
+}
+
+.media-shelf[data-kind="game"] {
+  border-color: rgba(244, 114, 182, 0.28);
 }
 
 .shelf-line {
@@ -1021,6 +1170,14 @@ footer a {
     grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
   }
 
+  .entertainment-shelves {
+    grid-template-columns: 1fr;
+  }
+
+  .entertainment-shelves > .media-shelf {
+    grid-column: auto;
+  }
+
   .hobby-board {
     grid-template-columns: repeat(2, minmax(160px, 1fr));
   }
@@ -1058,6 +1215,10 @@ footer a {
 
   .poster-run a {
     min-height: 170px;
+  }
+
+  .entertainment-shelves .shelf-line {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-nine {

@@ -20,7 +20,8 @@ const FloatingGlobe = ({
     if (!ref.current) return;
     ref.current.rotation.y = state.clock.elapsedTime * 0.16;
     ref.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.4) * 0.08;
-    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.8) * 0.16;
+    ref.current.position.y =
+      position[1] + Math.sin(state.clock.elapsedTime * 0.8) * 0.16;
   });
 
   return (
@@ -65,7 +66,8 @@ const CinemaObject = ({ position }: { position: [number, number, number] }) => {
   useFrame((state) => {
     if (!ref.current) return;
     ref.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.16;
-    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.72 + 2) * 0.14;
+    ref.current.position.y =
+      position[1] + Math.sin(state.clock.elapsedTime * 0.72 + 2) * 0.14;
   });
 
   return (
@@ -103,7 +105,8 @@ const BooksObject = ({ position }: { position: [number, number, number] }) => {
     if (!ref.current) return;
     ref.current.rotation.y =
       -0.3 + Math.sin(state.clock.elapsedTime * 0.45) * 0.12;
-    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.64 + 4) * 0.13;
+    ref.current.position.y =
+      position[1] + Math.sin(state.clock.elapsedTime * 0.64 + 4) * 0.13;
   });
 
   return (
@@ -142,7 +145,8 @@ const ChoiceObject = ({ position }: { position: [number, number, number] }) => {
   useFrame((state) => {
     if (!ref.current) return;
     ref.current.rotation.y = state.clock.elapsedTime * 0.12;
-    ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.9 + 1) * 0.18;
+    ref.current.position.y =
+      position[1] + Math.sin(state.clock.elapsedTime * 0.9 + 1) * 0.18;
   });
 
   return (
@@ -285,6 +289,8 @@ const lifestyleImages: Record<
     "https://images.unsplash.com/photo-1434596922112-19c563067271?auto=format&fit=crop&w=1200&q=80",
   walking:
     "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=80",
+  stimulants:
+    "https://images.unsplash.com/photo-1588776814546-0f1c3d8e5b9e?auto=format&fit=crop&w=900&q=80",
 };
 
 const HealthyLifestylePanel = () => {
@@ -348,12 +354,13 @@ type ShelfItem = {
 const toShelfItem = (item: {
   title: string;
   author?: string;
+  note?: string;
   link?: string;
   posterImage?: string;
 }): ShelfItem => ({
   title: item.title,
   href: item.link,
-  detail: item.author || "Open link",
+  detail: item.author || item.note || (item.link ? "Open link" : undefined),
   posterImage: item.posterImage,
 });
 
@@ -365,7 +372,7 @@ const App = () => {
     href: movie.link || trailerSearchUrl(movie.title),
     posterImage: movie.posterImage,
   }));
-  const mediaGroups = (
+  const seriousMediaGroups = (
     [
       { label: "Books", kind: "book", items: library.books },
       {
@@ -378,11 +385,6 @@ const App = () => {
         label: "Documentaries",
         kind: "documentary",
         items: library.documentaries.filter((item) => item.title),
-      },
-      {
-        label: "Series",
-        kind: "series",
-        items: library.series.filter((item) => item.title),
       },
     ] satisfies Array<{
       label: string;
@@ -397,6 +399,39 @@ const App = () => {
   ).map((group) => ({
     ...group,
     items: group.items.map(toShelfItem),
+  }));
+
+  const entertainmentMediaGroups = (
+    [
+      {
+        label: "Series",
+        kind: "series",
+        items: library.series.filter((item) => item.title),
+      },
+      {
+        label: "Games",
+        kind: "game",
+        items: library.games.filter((item) => item.title),
+      },
+    ] satisfies Array<{
+      label: string;
+      kind: string;
+      items: Array<{
+        title: string;
+        author?: string;
+        link?: string;
+        posterImage?: string;
+      }>;
+    }>
+  ).map((group) => ({
+    ...group,
+    items: group.items.map((item) => ({
+      ...toShelfItem(item),
+      href:
+        "link" in item && typeof item.link === "string"
+          ? item.link
+          : trailerSearchUrl(item.title),
+    })),
   }));
 
   return (
@@ -479,7 +514,9 @@ const App = () => {
                     <div key={stay.id}>
                       <span>{String(index + 1).padStart(2, "0")}</span>
                       <strong>{stay.label}</strong>
-                      <small>{stay.fromYear}-{stay.toYear}</small>
+                      <small>
+                        {stay.fromYear}-{stay.toYear}
+                      </small>
                     </div>
                   ))}
                 </div>
@@ -513,16 +550,19 @@ const App = () => {
 
       <HealthyLifestylePanel />
 
-      <section className="cinema-wall">
+      <section className="cinema-wall content-zone entertainment-zone">
         <div className="section-copy">
-          <p className="eyebrow">Cinema</p>
-          <h2>Movies as mood markers.</h2>
-          <p>
-            Each title opens the provided link or a YouTube search for the
-            official trailer.
-          </p>
+          <p className="eyebrow">Entertainment</p>
+          <h2>Movies, series, and games.</h2>
+          <p>Stories, screens, and play—the lighter side of the collection.</p>
         </div>
-        <div className="poster-run">
+        <article className="entertainment-collection movie-collection">
+          <header className="collection-heading">
+            <span>01</span>
+            <strong>Movies</strong>
+            <small>Trailers &amp; favorites</small>
+          </header>
+          <div className="poster-run" aria-label="Movies">
           {movieLinks
             .sort(
               (a, b) =>
@@ -541,35 +581,69 @@ const App = () => {
                       ? `url("${movie.posterImage}")`
                       : undefined,
                     "--hue": index * 23,
-                    "--shift": `${(index % 4) * 8}px`,
                   } as React.CSSProperties
                 }
               >
-                <span
-                  className="p-2"
-                  style={{
-                    backgroundColor: `rgba(0,0,0,0.5)`,
-                    width: "max-content",
-                    padding: "0.1rem",
-                  }}
-                >
-                  {movie.year || "Trailer"}
-                </span>
-
+                <span>{movie.year || "Trailer"}</span>
                 <b>{slugLetters(movie.title)}</b>
                 <em>{movie.title}</em>
               </a>
             ))}
+          </div>
+        </article>
+        <div className="classified-shelves entertainment-shelves">
+          {entertainmentMediaGroups.map((group) => (
+            <article
+              key={group.label}
+              className="media-shelf"
+              data-kind={group.kind}
+            >
+              <header className="collection-heading">
+                <span>{group.kind === "series" ? "02" : "03"}</span>
+                <strong>{group.label}</strong>
+                <small>
+                  {group.kind === "series" ? "Shows & seasons" : "Digital & tabletop"}
+                </small>
+              </header>
+              <div className="shelf-line">
+                {group.items
+                  .sort((a, b) => a.title.localeCompare(b.title))
+                  .map((item) => (
+                    <a
+                      key={item.title}
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Watch the official trailer for ${item.title}`}
+                    >
+                      {item.posterImage ? (
+                        <img src={item.posterImage} alt="" loading="lazy" />
+                      ) : (
+                        <b>{slugLetters(item.title)}</b>
+                      )}
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.detail ? `${item.detail} · ` : ""}Official trailer ↗
+                      </span>
+                    </a>
+                  ))}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
       <section className="library-shelf">
         <div className="section-copy">
-          <p className="eyebrow">Books / Audio / Shows</p>
-          <h2>A shelf for the heavier stuff.</h2>
+          <p className="eyebrow">Ideas &amp; Real Life</p>
+          <h2>The serious collection.</h2>
+          <p>
+            Books, lectures, programs, and documentaries for learning and
+            reflection.
+          </p>
         </div>
         <div className="classified-shelves">
-          {mediaGroups.map((group) => (
+          {seriousMediaGroups.map((group) => (
             <article
               key={group.label}
               className="media-shelf"
