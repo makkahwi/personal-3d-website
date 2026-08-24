@@ -9,7 +9,8 @@ export type LifeAspectCategory =
   | "mobility"
   | "career"
   | "education"
-  | "social";
+  | "social"
+  | "health";
 
 export type CountryMemory = {
   id: string;
@@ -34,6 +35,8 @@ export type Hobby = {
 export type Stays = {
   id: string;
   label: string;
+  fromYear: number;
+  toYear: number | "current";
   destination: string;
 };
 
@@ -74,6 +77,23 @@ export type SocialAccount = {
   link?: string;
   engagement: "inactive" | "low" | "active";
   note: string;
+};
+
+export type HealthyLifestyleItem = {
+  id: string;
+  label: string;
+  fromYear?: number;
+  toYear?: number | "current";
+  cadence?: string;
+  note: string;
+  visualHint:
+    | "fasting"
+    | "sleep"
+    | "sugar"
+    | "vegan"
+    | "nutritionist"
+    | "weight-loss"
+    | "walking";
 };
 
 export type NineChoiceGroupId = "study" | "career" | "stays";
@@ -141,13 +161,15 @@ export const personalProfile = {
           {
             id: "secretariat-financial-management",
             label: "Secretariat and financial management",
-            detail: "Early professional phase covering secretariat and financial management roles.",
+            detail:
+              "Early professional phase covering secretariat and financial management roles.",
             outcome: "2008-2013",
           },
           {
             id: "graphic-design",
             label: "Graphic design",
-            detail: "A visual and creative phase before moving into web development.",
+            detail:
+              "A visual and creative phase before moving into web development.",
             outcome: "2013-2018",
           },
           {
@@ -424,6 +446,13 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "The 7 Habits of Highly Effective People",
+        author: "Stephen R. Covey",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/The%207%20Habits%20of%20Highly%20Effective%20People-L.jpg",
+      },
+      {
+        id: "",
         title: "الدين والعلمانية في سياق تاريخي",
         author: "عزمي بشارة",
         posterImage:
@@ -431,17 +460,24 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "Modernity and the Holocaust",
+        author: "Zygmunt Bauman",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/Modernity_and_the_Holocaust.jpg",
+      },
+      {
+        id: "",
+        title: "How to attract people like a magnet",
+        author: "Leil Lowndes",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/How_to_attract_people_like_a_magnet-L.jpg",
+      },
+      {
+        id: "",
         title: "الديمقراطية وحقوق الإنسان في الإسلام",
         author: "راشد الغنوشي",
         posterImage:
           "https://covers.openlibrary.org/b/title/%D8%A7%D9%84%D8%AF%D9%8A%D9%85%D9%82%D8%B1%D8%A7%D8%B7%D9%8A%D8%A9%20%D9%88%D8%AD%D9%82%D9%88%D9%82%20%D8%A7%D9%84%D8%A5%D9%86%D8%B3%D8%A7%D9%86%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85-L.jpg",
-      },
-      {
-        id: "",
-        title: "معضلة المالاي",
-        author: "مهاتير محمد",
-        posterImage:
-          "https://covers.openlibrary.org/b/title/%D9%85%D8%B9%D8%B6%D9%84%D8%A9%20%D8%A7%D9%84%D9%85%D8%A7%D9%84%D8%A7%D9%8A-L.jpg",
       },
     ] satisfies CulturalItem[],
     documentaries: [
@@ -451,8 +487,36 @@ export const personalProfile = {
         link: "https://www.youtube.com/watch?v=m3mjPiwd5tU&list=PLmrET10kAE97RuC47XUMWxQ9BlXB_9QDB",
         posterImage: "https://img.youtube.com/vi/m3mjPiwd5tU/hqdefault.jpg",
       },
-      { id: "", title: "", link: "" },
-      { id: "", title: "", link: "" },
+      {
+        id: "",
+        title: "Trump’s Power",
+        link: "https://www.youtube.com/watch?v=28sQyweAPRs",
+        posterImage: "https://img.youtube.com/vi/28sQyweAPRs/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "طعامنا والمزاج",
+        link: "https://www.youtube.com/watch?v=IyEh5mvHicM",
+        posterImage: "https://img.youtube.com/vi/IyEh5mvHicM/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "مملكة الحجاز",
+        link: "https://www.youtube.com/watch?v=1gWVCoYAcVs",
+        posterImage: "https://img.youtube.com/vi/1gWVCoYAcVs/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "Building By Recycling",
+        link: "https://www.youtube.com/watch?v=pWpH9R-yY4c",
+        posterImage: "https://img.youtube.com/vi/pWpH9R-yY4c/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "هياكل عملاقة - ناشونال جيوجرافيك أبو ظبي",
+        link: "https://www.youtube.com/watch?v=Kqo95SLWCkw",
+        posterImage: "https://img.youtube.com/vi/Kqo95SLWCkw/hqdefault.jpg",
+      },
     ] satisfies CulturalItem[],
     movies: [
       {
@@ -475,15 +539,15 @@ export const personalProfile = {
         title: "Detained",
         note: "2024",
         posterImage:
-          "https://image.tmdb.org/t/p/w500/4f9TFrJzI3eou29WnhSx8zEXnH8.jpg",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/Detained_film_poster.jpg",
       },
-      {
-        id: "",
-        title: "Game Change",
-        note: "2012",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_poster.jpg",
-      },
+      // {
+      //   id: "",
+      //   title: "Game Change",
+      //   note: "2012",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_2012_poster.jpg",
+      // },
       {
         id: "",
         title: "Jumanji",
@@ -512,19 +576,19 @@ export const personalProfile = {
         posterImage:
           "https://en.wikipedia.org/wiki/Special:Redirect/file/Split_(2017_film).jpg",
       },
-      {
-        id: "",
-        title: "The Fault In Our Stars",
-        note: "2014",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(film).jpg",
-      },
+      // {
+      //   id: "",
+      //   title: "The Fault In Our Stars",
+      //   note: "2014",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(Official_Film_Poster).png",
+      // },
       {
         id: "",
         title: "The Hitman's Bodyguard",
         note: "2017",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Hitman's_Bodyguard_poster.png",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/HitmansBodyguard.jpg",
       },
       {
         id: "",
@@ -540,33 +604,33 @@ export const personalProfile = {
         posterImage:
           "https://en.wikipedia.org/wiki/Special:Redirect/file/ShawshankRedemptionMoviePoster.jpg",
       },
-      {
-        id: "",
-        title: "The Social Network",
-        note: "2010",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Social_Network_film_poster.png",
-      },
-      {
-        id: "",
-        title: "Oppenheimer",
-        note: "2023",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Oppenheimer_(film).jpg",
-      },
-      {
-        id: "",
-        title: "Pain Hustlers",
-        note: "2023",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_Hustlers_poster.jpg",
-      },
+      // {
+      //   id: "",
+      //   title: "The Social Network",
+      //   note: "2010",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Social_Network_film_poster.png",
+      // },
+      // {
+      //   id: "",
+      //   title: "Oppenheimer",
+      //   note: "2023",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/Oppenheimer_(film).jpg",
+      // },
+      // {
+      //   id: "",
+      //   title: "Pain Hustlers",
+      //   note: "2023",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_hustlers_film_poster.jpg",
+      // },
       {
         id: "",
         title: "True Memoirs Of an International Assassin",
         note: "2016",
         posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/True_Memoirs_of_an_International_Assassin.png",
+          "https://en.wikipedia.org/wiki/Special:Redirect/file/True_Memoirs_of_an_International_Assassin.jpg",
       },
       {
         id: "",
@@ -585,25 +649,36 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "هندسة الهوية - علي السند",
+        link: "https://www.youtube.com/watch?v=t78c4PZ0mZw",
+        posterImage: "https://img.youtube.com/vi/t78c4PZ0mZw/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "بودكاست سكن",
+        link: "https://www.youtube.com/watch?v=oNiNk_D8buE",
+        posterImage: "https://img.youtube.com/vi/oNiNk_D8buE/hqdefault.jpg",
+      },
+      {
+        id: "",
         title: "Financial Literacy",
         link: "https://www.youtube.com/watch?v=V360AygOv7A",
         posterImage: "https://img.youtube.com/vi/V360AygOv7A/hqdefault.jpg",
       },
       {
         id: "",
-        title: "Barack Obama - Hasan Minhaj",
-        link: "https://www.youtube.com/watch?v=jAYVKZSWXhY",
-        posterImage: "https://img.youtube.com/vi/jAYVKZSWXhY/hqdefault.jpg",
+        title: "صفقة القرن - عزمي بشارة",
+        link: "https://www.youtube.com/watch?v=dwYofUwTXlQ",
+        posterImage: "https://img.youtube.com/vi/dwYofUwTXlQ/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "تجربتي - المنصف المرزوقي",
+        link: "https://www.youtube.com/watch?v=iRUfPb1HgUk",
+        posterImage: "https://img.youtube.com/vi/iRUfPb1HgUk/hqdefault.jpg",
       },
     ] satisfies CulturalItem[],
     programs: [
-      {
-        id: "",
-        title: "Jimmy Fallon",
-        link: "https://www.youtube.com/@fallontonight",
-        posterImage:
-          "https://static.tvmaze.com/uploads/images/original_untouched/22/57388.jpg",
-      },
       {
         id: "",
         title: "المخبر الاقتصادي",
@@ -640,7 +715,7 @@ export const personalProfile = {
         id: "",
         title: "ضيعة ضايعة",
         posterImage:
-          "https://static.tvmaze.com/uploads/images/original_untouched/472/1180565.jpg",
+          "https://upload.wikimedia.org/wikipedia/ar/b/b5/%D9%84%D9%82%D8%B7%D8%A9_%D8%B4%D8%A7%D8%B1%D8%A9_%D9%85%D8%B3%D9%84%D8%B3%D9%84_%D8%B6%D9%8A%D8%B9%D8%A9_%D8%B6%D8%A7%D9%8A%D8%B9%D8%A9.jpeg?utm_source=ar.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
       },
       {
         id: "",
@@ -658,12 +733,6 @@ export const personalProfile = {
         title: "البلاتوه - أحمد أمين",
         posterImage:
           "https://static.tvmaze.com/uploads/images/original_untouched/297/742636.jpg",
-      },
-      {
-        id: "",
-        title: "الصفارة - أحمد أمين",
-        posterImage:
-          "https://static.tvmaze.com/uploads/images/original_untouched/453/1134036.jpg",
       },
     ] satisfies CulturalItem[],
     note: "Titles to be filled from the owner's actual read/watch history; keep this list factual and curated.",
@@ -697,20 +766,86 @@ export const personalProfile = {
     ] satisfies SocialAccount[],
   },
 
+  healthyLifestyle: {
+    summary:
+      "Long-term personal care around fasting, sleep, diet, nutrition, weight, and movement.",
+    items: [
+      {
+        id: "monday-thursday-fasting",
+        label: "Mon and Thu fasting",
+        fromYear: 2012,
+        toYear: "current",
+        note: "Has been fasting Mon and Thu since 2012.",
+        visualHint: "fasting",
+      },
+      {
+        id: "early-sleep",
+        label: "Early sleep routine",
+        note: "Sleeps and gets up early as part of daily lifestyle care.",
+        visualHint: "sleep",
+      },
+      {
+        id: "reduced-sugar",
+        label: "Reduced sugar consumption",
+        fromYear: 2015,
+        toYear: "current",
+        note: "Reduced sugar consumption from 2015.",
+        visualHint: "sugar",
+      },
+      {
+        id: "adjusted-vegan-diet",
+        label: "Adjusted vegan diet",
+        fromYear: 2019,
+        toYear: 2023,
+        note: "Followed an adjusted vegan diet from 2019 to 2023.",
+        visualHint: "vegan",
+      },
+      {
+        id: "weekly-nutritionist",
+        label: "Weekly nutritionist visits",
+        fromYear: 2024,
+        toYear: "current",
+        note: "Has been visiting a nutritionist weekly since 2024.",
+        visualHint: "nutritionist",
+      },
+      {
+        id: "almost-30kg-lost",
+        label: "Almost 30 kg lost",
+        fromYear: 2024,
+        toYear: "current",
+        note: "Lost almost 30 kg through health and nutrition care.",
+        visualHint: "weight-loss",
+      },
+      {
+        id: "alternate-day-walking",
+        label: "Walking exercise",
+        cadence: "Alternate days",
+        note: "Does walking exercise on alternate days.",
+        visualHint: "walking",
+      },
+    ] satisfies HealthyLifestyleItem[],
+  },
+
   stays: [
     {
       id: "makkah",
       label: "Makkah →",
+      fromYear: 1993,
+      toYear: 2011,
       destination: "Makkah",
     },
     {
       id: "kuala-lumpur",
       label: "Kuala Lumpur →",
+      fromYear: 2011,
+      toYear: 2021,
       destination: "Kuala Lumpur",
     },
     {
       id: "amman",
       label: "Amman →",
+      fromYear: 2021,
+      toYear: "current",
       destination: "Amman",
     },
   ] satisfies Stays[],
