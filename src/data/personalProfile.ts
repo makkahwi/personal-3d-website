@@ -35,6 +35,8 @@ export type Hobby = {
 export type Stays = {
   id: string;
   label: string;
+  fromYear: number;
+  toYear: number | "current";
   destination: string;
 };
 
@@ -458,6 +460,20 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "Modernity and the Holocaust",
+        author: "Zygmunt Bauman",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/Modernity_and_the_Holocaust.jpg",
+      },
+      {
+        id: "",
+        title: "How to attract people like a magnet",
+        author: "Leil Lowndes",
+        posterImage:
+          "https://covers.openlibrary.org/b/title/How_to_attract_people_like_a_magnet-L.jpg",
+      },
+      {
+        id: "",
         title: "الديمقراطية وحقوق الإنسان في الإسلام",
         author: "راشد الغنوشي",
         posterImage:
@@ -471,8 +487,36 @@ export const personalProfile = {
         link: "https://www.youtube.com/watch?v=m3mjPiwd5tU&list=PLmrET10kAE97RuC47XUMWxQ9BlXB_9QDB",
         posterImage: "https://img.youtube.com/vi/m3mjPiwd5tU/hqdefault.jpg",
       },
-      { id: "", title: "", link: "" },
-      { id: "", title: "", link: "" },
+      {
+        id: "",
+        title: "Trump’s Power",
+        link: "https://www.youtube.com/watch?v=28sQyweAPRs",
+        posterImage: "https://img.youtube.com/vi/28sQyweAPRs/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "طعامنا والمزاج",
+        link: "https://www.youtube.com/watch?v=IyEh5mvHicM",
+        posterImage: "https://img.youtube.com/vi/IyEh5mvHicM/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "مملكة الحجاز",
+        link: "https://www.youtube.com/watch?v=1gWVCoYAcVs",
+        posterImage: "https://img.youtube.com/vi/1gWVCoYAcVs/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "Building By Recycling",
+        link: "https://www.youtube.com/watch?v=pWpH9R-yY4c",
+        posterImage: "https://img.youtube.com/vi/pWpH9R-yY4c/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "هياكل عملاقة - ناشونال جيوجرافيك أبو ظبي",
+        link: "https://www.youtube.com/watch?v=Kqo95SLWCkw",
+        posterImage: "https://img.youtube.com/vi/Kqo95SLWCkw/hqdefault.jpg",
+      },
     ] satisfies CulturalItem[],
     movies: [
       {
@@ -605,25 +649,36 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "هندسة الهوية - علي السند",
+        link: "https://www.youtube.com/watch?v=t78c4PZ0mZw",
+        posterImage: "https://img.youtube.com/vi/t78c4PZ0mZw/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "بودكاست سكن",
+        link: "https://www.youtube.com/watch?v=oNiNk_D8buE",
+        posterImage: "https://img.youtube.com/vi/oNiNk_D8buE/hqdefault.jpg",
+      },
+      {
+        id: "",
         title: "Financial Literacy",
         link: "https://www.youtube.com/watch?v=V360AygOv7A",
         posterImage: "https://img.youtube.com/vi/V360AygOv7A/hqdefault.jpg",
       },
       {
         id: "",
-        title: "Barack Obama - Hasan Minhaj",
-        link: "https://www.youtube.com/watch?v=jAYVKZSWXhY",
-        posterImage: "https://img.youtube.com/vi/jAYVKZSWXhY/hqdefault.jpg",
+        title: "صفقة القرن - عزمي بشارة",
+        link: "https://www.youtube.com/watch?v=dwYofUwTXlQ",
+        posterImage: "https://img.youtube.com/vi/dwYofUwTXlQ/hqdefault.jpg",
+      },
+      {
+        id: "",
+        title: "تجربتي - المنصف المرزوقي",
+        link: "https://www.youtube.com/watch?v=iRUfPb1HgUk",
+        posterImage: "https://img.youtube.com/vi/iRUfPb1HgUk/hqdefault.jpg",
       },
     ] satisfies CulturalItem[],
     programs: [
-      {
-        id: "",
-        title: "Jimmy Fallon",
-        link: "https://www.youtube.com/@fallontonight",
-        posterImage:
-          "https://static.tvmaze.com/uploads/images/original_untouched/22/57388.jpg",
-      },
       {
         id: "",
         title: "المخبر الاقتصادي",
@@ -679,12 +734,6 @@ export const personalProfile = {
         posterImage:
           "https://static.tvmaze.com/uploads/images/original_untouched/297/742636.jpg",
       },
-      {
-        id: "",
-        title: "الصفارة - أحمد أمين",
-        posterImage:
-          "https://static.tvmaze.com/uploads/images/original_untouched/453/1134036.jpg",
-      },
     ] satisfies CulturalItem[],
     note: "Titles to be filled from the owner's actual read/watch history; keep this list factual and curated.",
   },
@@ -726,7 +775,6 @@ export const personalProfile = {
         label: "Mon and Thu fasting",
         fromYear: 2012,
         toYear: "current",
-        cadence: "Mon and Thu",
         note: "Has been fasting Mon and Thu since 2012.",
         visualHint: "fasting",
       },
@@ -757,7 +805,6 @@ export const personalProfile = {
         label: "Weekly nutritionist visits",
         fromYear: 2024,
         toYear: "current",
-        cadence: "Weekly",
         note: "Has been visiting a nutritionist weekly since 2024.",
         visualHint: "nutritionist",
       },
@@ -783,16 +830,22 @@ export const personalProfile = {
     {
       id: "makkah",
       label: "Makkah →",
+      fromYear: 1993,
+      toYear: 2011,
       destination: "Makkah",
     },
     {
       id: "kuala-lumpur",
       label: "Kuala Lumpur →",
+      fromYear: 2011,
+      toYear: 2021,
       destination: "Kuala Lumpur",
     },
     {
       id: "amman",
       label: "Amman →",
+      fromYear: 2021,
+      toYear: "current",
       destination: "Amman",
     },
   ] satisfies Stays[],

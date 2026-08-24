@@ -1,7 +1,4 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { geoGraticule10, geoNaturalEarth1, geoPath } from "d3-geo";
-
-import type { FeatureCollection, Polygon } from "geojson";
 import * as React from "react";
 import * as THREE from "three";
 
@@ -182,190 +179,6 @@ const Stage = () => (
   </div>
 );
 
-const worldLand: FeatureCollection<Polygon, { name: string }> = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      properties: { name: "North America" },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [-168, 72],
-            [-142, 70],
-            [-124, 58],
-            [-116, 49],
-            [-96, 50],
-            [-78, 58],
-            [-54, 50],
-            [-60, 30],
-            [-84, 15],
-            [-104, 20],
-            [-118, 32],
-            [-129, 48],
-            [-150, 58],
-            [-168, 72],
-          ],
-        ],
-      },
-    },
-    {
-      type: "Feature",
-      properties: { name: "South America" },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [-82, 12],
-            [-62, 9],
-            [-46, -8],
-            [-38, -23],
-            [-50, -55],
-            [-68, -52],
-            [-76, -28],
-            [-82, 12],
-          ],
-        ],
-      },
-    },
-    {
-      type: "Feature",
-      properties: { name: "Europe Asia Africa" },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [-18, 36],
-            [-10, 60],
-            [26, 70],
-            [72, 64],
-            [122, 50],
-            [150, 56],
-            [168, 42],
-            [138, 18],
-            [106, 8],
-            [82, 24],
-            [62, 8],
-            [42, 12],
-            [34, -34],
-            [18, -35],
-            [4, -18],
-            [-16, 6],
-            [-18, 36],
-          ],
-        ],
-      },
-    },
-    {
-      type: "Feature",
-      properties: { name: "Arabia India Southeast Asia" },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [34, 32],
-            [56, 28],
-            [78, 7],
-            [100, 4],
-            [119, -7],
-            [104, -12],
-            [84, 18],
-            [62, 22],
-            [48, 13],
-            [34, 32],
-          ],
-        ],
-      },
-    },
-    {
-      type: "Feature",
-      properties: { name: "Australia" },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [112, -12],
-            [154, -18],
-            [150, -40],
-            [118, -44],
-            [112, -12],
-          ],
-        ],
-      },
-    },
-    {
-      type: "Feature",
-      properties: { name: "Greenland" },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [-52, 60],
-            [-28, 70],
-            [-38, 82],
-            [-62, 78],
-            [-52, 60],
-          ],
-        ],
-      },
-    },
-  ],
-};
-
-const WorldMap = () => {
-  const width = 1000;
-  const height = 520;
-  const projection = geoNaturalEarth1().fitExtent(
-    [
-      [30, 20],
-      [width - 30, height - 20],
-    ],
-    { type: "Sphere" },
-  );
-  const path = geoPath(projection);
-  const spherePath = path({ type: "Sphere" }) ?? "";
-  const graticulePath = path(geoGraticule10()) ?? "";
-
-  return (
-    <div className="world-map" aria-label="Visited countries map">
-      <svg viewBox={`0 0 ${width} ${height}`} role="img">
-        <path className="map-sphere" d={spherePath} />
-        <path className="map-grid" d={graticulePath} />
-        {worldLand.features.map((feature) => (
-          <path
-            key={feature.properties.name}
-            className="map-land"
-            d={path(feature) ?? ""}
-          />
-        ))}
-        {personalProfile.countries.map((country) => {
-          const [x, y] = projection([...country.coordinates]) ?? [0, 0];
-          return (
-            <g
-              key={country.id}
-              className="map-pin"
-              transform={`translate(${x} ${y})`}
-            >
-              <circle r="13" />
-              <text y="-20">{country.flag}</text>
-              <title>
-                {country.name}
-                {country.yearVisited ? `, ${country.yearVisited}` : ""}
-              </title>
-            </g>
-          );
-        })}
-      </svg>
-      <div className="map-legend">
-        {personalProfile.stays.map((stay) => (
-          <span key={stay.id}>{stay.destination}</span>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const slugLetters = (title: string) =>
   title
     .split(/\s+/)
@@ -382,7 +195,9 @@ const lifestyleShortLabel = (label: string) =>
     .map((word) => word[0])
     .join("");
 
-const lifestyleMeta = (item: (typeof personalProfile.healthyLifestyle.items)[number]) => {
+const lifestyleMeta = (
+  item: (typeof personalProfile.healthyLifestyle.items)[number],
+) => {
   const years =
     item.fromYear !== undefined
       ? `${item.fromYear}-${item.toYear ?? "now"}`
@@ -492,7 +307,11 @@ const App = () => {
   const mediaGroups = (
     [
       { label: "Books", kind: "book", items: library.books },
-      { label: "Podcasts", kind: "podcast", items: library.podcasts },
+      {
+        label: "Podcasts / Lectures",
+        kind: "podcast",
+        items: library.podcasts,
+      },
       { label: "Programs", kind: "program", items: library.programs },
       {
         label: "Documentaries",
@@ -534,65 +353,78 @@ const App = () => {
         </div>
       </section>
 
-      <section className="choice-band">
-        <div>
+      <section className="identity-map">
+        <header className="identity-heading">
           <p className="eyebrow">Identity Map</p>
-          <h2>{personalProfile.nineChoices.title} choices</h2>
-        </div>
-        {personalProfile.nineChoices.groups.map((group, groupIndex) => (
-          <article key={group.id}>
-            <span className="choice-glyph">{groupIndex + 1}</span>
-            <strong>{group.label}</strong>
-            <p>{group.summary}</p>
-            <div className="choice-nodes">
-              {group.choices.map((choice) => (
-                <abbr key={choice.id} title={choice.detail}>
-                  {choice.label}
-                </abbr>
-              ))}
-            </div>
-          </article>
-        ))}
-      </section>
+          <h2>Three parts of one story.</h2>
+          <p>{personalProfile.nineChoices.summary}</p>
+        </header>
 
-      <section className="travel-flow">
-        <div className="section-copy">
-          <p className="eyebrow">Places</p>
-          <h2>Some cities stay louder than others.</h2>
-          <p>
-            Makkah, Kuala Lumpur, and Amman are the fixed pins. The rest orbit
-            as travel memory.
-          </p>
-        </div>
-        <WorldMap />
-      </section>
+        <div className="identity-grid">
+          {personalProfile.nineChoices.groups.map((group) => (
+            <article
+              key={group.id}
+              className={`identity-card identity-${group.id}`}
+            >
+              <div className="identity-card-copy">
+                <p className="eyebrow">
+                  {group.id === "career"
+                    ? "Work Context"
+                    : group.id === "stays"
+                      ? "Places"
+                      : group.label}
+                </p>
+                <h3>
+                  {group.id === "stays"
+                    ? "Three places I've lived."
+                    : group.id === "study"
+                      ? "The route to coding."
+                      : "A background line."}
+                </h3>
+                <p>
+                  {group.id === "stays"
+                    ? "Makkah, Kuala Lumpur, and Amman are the three places that shaped my society, sense of home and identity."
+                    : group.summary}
+                </p>
+              </div>
 
-      <section className="two-lanes">
-        <div className="lane">
-          <p className="eyebrow">Study</p>
-          <h2>Academic detours, then computer science.</h2>
-          <div className="pathway">
-            {personalProfile.educationPath.map((step) => (
-              <div key={step.id}>
-                <span>{step.status}</span>
-                <strong>{step.field}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="lane">
-          <p className="eyebrow">Work Context</p>
-          <h2>A background line, not the whole story.</h2>
-          <div className="career-bars">
-            {personalProfile.professionalBackground.phases.map((phase) => (
-              <div key={phase.id}>
-                <span>
-                  {phase.fromYear}-{phase.toYear}
-                </span>
-                <strong>{phase.label}</strong>
-              </div>
-            ))}
-          </div>
+              {group.id === "study" && (
+                <div className="pathway">
+                  {personalProfile.educationPath.map((step) => (
+                    <div key={step.id}>
+                      <span>{step.status}</span>
+                      <strong>{step.field}</strong>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {group.id === "career" && (
+                <div className="career-bars">
+                  {personalProfile.professionalBackground.phases.map(
+                    (phase) => (
+                      <div key={phase.id}>
+                        <span>
+                          {phase.fromYear}-{phase.toYear}
+                        </span>
+                        <strong>{phase.label}</strong>
+                      </div>
+                    ),
+                  )}
+                </div>
+              )}
+              {group.id === "stays" && (
+                <div className="stay-bars">
+                  {personalProfile.stays.map((stay, index) => (
+                    <div key={stay.id}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{stay.label}</strong>
+                      <small>{stay.fromYear}-{stay.toYear}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
         </div>
       </section>
 
@@ -630,27 +462,43 @@ const App = () => {
           </p>
         </div>
         <div className="poster-run">
-          {movieLinks.map((movie, index) => (
-            <a
-              key={movie.title}
-              href={movie.href}
-              target="_blank"
-              rel="noreferrer"
-              style={
-                {
-                  "--poster": movie.posterImage
-                    ? `url("${movie.posterImage}")`
-                    : undefined,
-                  "--hue": index * 23,
-                  "--shift": `${(index % 4) * 8}px`,
-                } as React.CSSProperties
-              }
-            >
-              <span>{movie.year || "Trailer"}</span>
-              <b>{slugLetters(movie.title)}</b>
-              <em>{movie.title}</em>
-            </a>
-          ))}
+          {movieLinks
+            .sort(
+              (a, b) =>
+                b.year?.localeCompare(a.year ?? "") ||
+                b.title.localeCompare(a.title),
+            )
+            .map((movie, index) => (
+              <a
+                key={movie.title}
+                href={movie.href}
+                target="_blank"
+                rel="noreferrer"
+                style={
+                  {
+                    "--poster": movie.posterImage
+                      ? `url("${movie.posterImage}")`
+                      : undefined,
+                    "--hue": index * 23,
+                    "--shift": `${(index % 4) * 8}px`,
+                  } as React.CSSProperties
+                }
+              >
+                <span
+                  className="p-2"
+                  style={{
+                    backgroundColor: `rgba(0,0,0,0.5)`,
+                    width: "max-content",
+                    padding: "0.1rem",
+                  }}
+                >
+                  {movie.year || "Trailer"}
+                </span>
+
+                <b>{slugLetters(movie.title)}</b>
+                <em>{movie.title}</em>
+              </a>
+            ))}
         </div>
       </section>
 
