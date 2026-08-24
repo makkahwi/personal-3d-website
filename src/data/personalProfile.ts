@@ -371,13 +371,13 @@ export const personalProfile = {
       visualHint: "Kitchen worktop",
     },
     {
-      id: "chess",
-      label: "Chess",
-      category: "games",
-      sceneObjectId: "chess-module",
+      id: "travelling",
+      label: "Travelling",
+      category: "travel",
+      sceneObjectId: "floating-globe",
       image:
-        "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=900&q=80",
-      visualHint: "Chessboard",
+        "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=900&q=80",
+      visualHint: "Passport, map, and travel camera",
     },
     {
       id: "pc",

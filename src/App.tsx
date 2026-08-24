@@ -227,10 +227,10 @@ const CameraDrift = () => {
 const Stage = () => (
   <div className="stage" aria-hidden="true">
     <Canvas camera={{ position: [0, 0, 8], fov: 42 }}>
-      <color attach="background" args={["#071326"]} />
-      <fog attach="fog" args={["#071326", 9, 18]} />
-      <ambientLight intensity={0.68} />
-      <hemisphereLight args={["#67e8f9", "#4c1d95", 1.1]} />
+      <color attach="background" args={["#f7f4ff"]} />
+      <fog attach="fog" args={["#f7f4ff", 9, 18]} />
+      <ambientLight intensity={1.15} />
+      <hemisphereLight args={["#ffffff", "#ddd6fe", 1.5]} />
       <pointLight position={[-4, 3, 5]} intensity={3.2} color="#22d3ee" />
       <pointLight position={[5, -1, 3]} intensity={2.4} color="#fb7185" />
       <pointLight position={[0, 5, 1]} intensity={1.8} color="#facc15" />
@@ -438,18 +438,51 @@ const App = () => {
     <main className="landing-page">
       <Stage />
 
-      <section className="hero">
+      <nav className="site-nav" aria-label="Main navigation">
+        <a className="nav-mark" href="#top" aria-label="Back to top">
+          YN
+        </a>
+        <div>
+          <a href="#story">Story</a>
+          <a href="#everyday">Everyday</a>
+          <a href="#entertainment">Play</a>
+          <a href="#library">Ideas</a>
+        </div>
+      </nav>
+
+      <section className="hero" id="top">
         <p className="eyebrow">{personalProfile.site.scope}</p>
         <div className="hero-brand">
           <strong>9</strong>
           <div>
-            <h1>Three by three life map.</h1>
-            <p>Study, work, and place. Three choices each.</p>
+            <h1>A life, in color.</h1>
+            <p>Nine choices, many interests, one evolving story.</p>
+          </div>
+        </div>
+        <div className="profile-card">
+          <div
+            className="profile-photo"
+            role="img"
+            aria-label="Profile photo placeholder"
+          >
+            <span>your photo</span>
+          </div>
+          <div className="profile-copy">
+            <span className="profile-kicker">Hello, I am</span>
+            <h2>Suhaib</h2>
+            <p>
+              Add a two-line introduction about who you are beyond work—what you
+              enjoy, notice, collect, or care about.
+            </p>
+            <div className="profile-tags">
+              <span>📍 Your city</span>
+              <span>✨ Your current obsession</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="identity-map">
+      <section className="identity-map" id="story">
         <header className="identity-heading">
           <p className="eyebrow">Identity Map</p>
           <h2>Three parts of one story.</h2>
@@ -526,7 +559,7 @@ const App = () => {
         </div>
       </section>
 
-      <section className="hobby-ribbon">
+      <section className="hobby-ribbon" id="everyday">
         <p className="eyebrow">Everyday</p>
         <h2>Not everything needs a portfolio case study.</h2>
         <div className="hobby-board">
@@ -550,7 +583,10 @@ const App = () => {
 
       <HealthyLifestylePanel />
 
-      <section className="cinema-wall content-zone entertainment-zone">
+      <section
+        className="cinema-wall content-zone entertainment-zone"
+        id="entertainment"
+      >
         <div className="section-copy">
           <p className="eyebrow">Entertainment</p>
           <h2>Movies, series, and games.</h2>
@@ -563,32 +599,32 @@ const App = () => {
             <small>Trailers &amp; favorites</small>
           </header>
           <div className="poster-run" aria-label="Movies">
-          {movieLinks
-            .sort(
-              (a, b) =>
-                b.year?.localeCompare(a.year ?? "") ||
-                b.title.localeCompare(a.title),
-            )
-            .map((movie, index) => (
-              <a
-                key={movie.title}
-                href={movie.href}
-                target="_blank"
-                rel="noreferrer"
-                style={
-                  {
-                    "--poster": movie.posterImage
-                      ? `url("${movie.posterImage}")`
-                      : undefined,
-                    "--hue": index * 23,
-                  } as React.CSSProperties
-                }
-              >
-                <span>{movie.year || "Trailer"}</span>
-                <b>{slugLetters(movie.title)}</b>
-                <em>{movie.title}</em>
-              </a>
-            ))}
+            {movieLinks
+              .sort(
+                (a, b) =>
+                  b.year?.localeCompare(a.year ?? "") ||
+                  b.title.localeCompare(a.title),
+              )
+              .map((movie, index) => (
+                <a
+                  key={movie.title}
+                  href={movie.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={
+                    {
+                      "--poster": movie.posterImage
+                        ? `url("${movie.posterImage}")`
+                        : undefined,
+                      "--hue": index * 23,
+                    } as React.CSSProperties
+                  }
+                >
+                  <span>{movie.year || "Trailer"}</span>
+                  <b>{slugLetters(movie.title)}</b>
+                  <em>{movie.title}</em>
+                </a>
+              ))}
           </div>
         </article>
         <div className="classified-shelves entertainment-shelves">
@@ -602,7 +638,9 @@ const App = () => {
                 <span>{group.kind === "series" ? "02" : "03"}</span>
                 <strong>{group.label}</strong>
                 <small>
-                  {group.kind === "series" ? "Shows & seasons" : "Digital & tabletop"}
+                  {group.kind === "series"
+                    ? "Shows & seasons"
+                    : "Digital & tabletop"}
                 </small>
               </header>
               <div className="shelf-line">
@@ -623,7 +661,8 @@ const App = () => {
                       )}
                       <strong>{item.title}</strong>
                       <span>
-                        {item.detail ? `${item.detail} · ` : ""}Official trailer ↗
+                        {item.detail ? `${item.detail} · ` : ""}Official trailer
+                        ↗
                       </span>
                     </a>
                   ))}
@@ -633,7 +672,7 @@ const App = () => {
         </div>
       </section>
 
-      <section className="library-shelf">
+      <section className="library-shelf" id="library">
         <div className="section-copy">
           <p className="eyebrow">Ideas &amp; Real Life</p>
           <h2>The serious collection.</h2>
@@ -688,6 +727,42 @@ const App = () => {
           ))}
         </div>
       </section>
+
+      {/* <section className="future-board">
+        <div className="section-copy">
+          <p className="eyebrow">Make it more yours</p>
+          <h2>Good next additions.</h2>
+          <p>
+            These placeholders are ready to replace with real personal details.
+          </p>
+        </div>
+        <div className="future-grid">
+          <article>
+            <span>NOW</span>
+            <strong>Currently into</strong>
+            <p>
+              Add a rotating favorite, current project, or recent discovery.
+            </p>
+          </article>
+          <article>
+            <span>PLAY</span>
+            <strong>Personal soundtrack</strong>
+            <p>Add a favorite playlist or three songs that feel like you.</p>
+          </article>
+          <article>
+            <span>SNAP</span>
+            <strong>Mini photo diary</strong>
+            <p>
+              Add candid photos from food, walks, travel, and ordinary days.
+            </p>
+          </article>
+          <article>
+            <span>ASK</span>
+            <strong>Ask me about</strong>
+            <p>Add three conversation starters visitors can use to know you.</p>
+          </article>
+        </div>
+      </section> */}
 
       <footer>
         <p>{personalProfile.socialMedia.generalNote}</p>
