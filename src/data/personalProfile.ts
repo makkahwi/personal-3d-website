@@ -541,13 +541,13 @@ export const personalProfile = {
         posterImage:
           "https://en.wikipedia.org/wiki/Special:Redirect/file/Detained_film_poster.jpg",
       },
-      {
-        id: "",
-        title: "Game Change",
-        note: "2012",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_2012_poster.jpg",
-      },
+      // {
+      //   id: "",
+      //   title: "Game Change",
+      //   note: "2012",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/Game_Change_2012_poster.jpg",
+      // },
       {
         id: "",
         title: "Jumanji",
@@ -576,13 +576,13 @@ export const personalProfile = {
         posterImage:
           "https://en.wikipedia.org/wiki/Special:Redirect/file/Split_(2017_film).jpg",
       },
-      {
-        id: "",
-        title: "The Fault In Our Stars",
-        note: "2014",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(Official_Film_Poster).png",
-      },
+      // {
+      //   id: "",
+      //   title: "The Fault In Our Stars",
+      //   note: "2014",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Fault_in_Our_Stars_(Official_Film_Poster).png",
+      // },
       {
         id: "",
         title: "The Hitman's Bodyguard",
@@ -604,27 +604,27 @@ export const personalProfile = {
         posterImage:
           "https://en.wikipedia.org/wiki/Special:Redirect/file/ShawshankRedemptionMoviePoster.jpg",
       },
-      {
-        id: "",
-        title: "The Social Network",
-        note: "2010",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Social_Network_film_poster.png",
-      },
-      {
-        id: "",
-        title: "Oppenheimer",
-        note: "2023",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Oppenheimer_(film).jpg",
-      },
-      {
-        id: "",
-        title: "Pain Hustlers",
-        note: "2023",
-        posterImage:
-          "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_hustlers_film_poster.jpg",
-      },
+      // {
+      //   id: "",
+      //   title: "The Social Network",
+      //   note: "2010",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/The_Social_Network_film_poster.png",
+      // },
+      // {
+      //   id: "",
+      //   title: "Oppenheimer",
+      //   note: "2023",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/Oppenheimer_(film).jpg",
+      // },
+      // {
+      //   id: "",
+      //   title: "Pain Hustlers",
+      //   note: "2023",
+      //   posterImage:
+      //     "https://en.wikipedia.org/wiki/Special:Redirect/file/Pain_hustlers_film_poster.jpg",
+      // },
       {
         id: "",
         title: "True Memoirs Of an International Assassin",
