@@ -289,8 +289,7 @@ const lifestyleImages: Record<
     "https://images.unsplash.com/photo-1434596922112-19c563067271?auto=format&fit=crop&w=1200&q=80",
   walking:
     "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=80",
-  stimulants:
-    "https://images.unsplash.com/photo-1588776814546-0f1c3d8e5b9e?auto=format&fit=crop&w=900&q=80",
+  stimulants: "/media/reduced-stimulants.png",
 };
 
 const HealthyLifestylePanel = () => {
@@ -305,8 +304,8 @@ const HealthyLifestylePanel = () => {
   return (
     <section className="healthy-lifestyle">
       <div className="section-copy">
-        <p className="eyebrow">Healthy Lifestyle</p>
-        <h2>Care routines with a long memory.</h2>
+        <p className="eyebrow">Habits I keep</p>
+        <h2>Small health choices, practiced for years.</h2>
         <p>{healthyLifestyle.summary}</p>
       </div>
       <div className="lifestyle-system" aria-label="Healthy lifestyle habits">
@@ -380,7 +379,7 @@ const App = () => {
         kind: "podcast",
         items: library.podcasts,
       },
-      { label: "Programs", kind: "program", items: library.programs },
+      // { label: "Programs", kind: "program", items: library.programs },
       {
         label: "Documentaries",
         kind: "documentary",
@@ -440,8 +439,9 @@ const App = () => {
 
       <nav className="site-nav" aria-label="Main navigation">
         <a className="nav-mark" href="#top" aria-label="Back to top">
-          YN
+          Su 9
         </a>
+
         <div>
           <a href="#story">Story</a>
           <a href="#everyday">Everyday</a>
@@ -452,31 +452,36 @@ const App = () => {
 
       <section className="hero" id="top">
         <p className="eyebrow">{personalProfile.site.scope}</p>
-        <div className="hero-brand">
-          <strong>9</strong>
-          <div>
-            <h1>A life, in color.</h1>
-            <p>Nine choices, many interests, one evolving story.</p>
+        <div className="hero-row">
+          <div className="hero-brand">
+            <strong>9</strong>
+            <div>
+              <h1>The paths that made me.</h1>
+              <p>
+                Three life paths. Three chapters in each. Together, they make
+                nine.
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="profile-card">
-          <div
-            className="profile-photo"
-            role="img"
-            aria-label="Profile photo placeholder"
-          >
-            <span>your photo</span>
-          </div>
-          <div className="profile-copy">
-            <span className="profile-kicker">Hello, I am</span>
-            <h2>Suhaib</h2>
-            <p>
-              Add a two-line introduction about who you are beyond work—what you
-              enjoy, notice, collect, or care about.
-            </p>
-            <div className="profile-tags">
-              <span>📍 Your city</span>
-              <span>✨ Your current obsession</span>
+          <div className="profile-card">
+            <div
+              className="profile-photo"
+              role="img"
+              aria-label="Profile photo placeholder"
+            >
+              <span>your photo</span>
+            </div>
+            <div className="profile-copy">
+              <span className="profile-kicker">Hello, I am</span>
+              <h2>Suhaib</h2>
+              <p>
+                a curious builder shaped by technology, travel, and continuous
+                learning. I enjoy exploring thoughtful ideas, healthy routines,
+                and the small details that make life meaningful.
+              </p>
+              {/* <div className="profile-tags">
+                <span>📍 Amman</span>
+              </div> */}
             </div>
           </div>
         </div>
@@ -484,31 +489,27 @@ const App = () => {
 
       <section className="identity-map" id="story">
         <header className="identity-heading">
-          <p className="eyebrow">Identity Map</p>
-          <h2>Three parts of one story.</h2>
+          <p className="eyebrow">Study · Work · Place</p>
+          <h2>Three paths. Nine defining chapters.</h2>
           <p>{personalProfile.nineChoices.summary}</p>
         </header>
 
         <div className="identity-grid">
-          {personalProfile.nineChoices.groups.map((group) => (
+          {personalProfile.nineChoices.groups.map((group, groupIndex) => (
             <article
               key={group.id}
               className={`identity-card identity-${group.id}`}
             >
               <div className="identity-card-copy">
                 <p className="eyebrow">
-                  {group.id === "career"
-                    ? "Work Context"
-                    : group.id === "stays"
-                      ? "Places"
-                      : group.label}
+                  Path {String(groupIndex + 1).padStart(2, "0")} · {group.label}
                 </p>
                 <h3>
                   {group.id === "stays"
                     ? "Three places I've lived."
                     : group.id === "study"
                       ? "The route to coding."
-                      : "A background line."}
+                      : "From finance to design to code."}
                 </h3>
                 <p>
                   {group.id === "stays"
@@ -560,8 +561,8 @@ const App = () => {
       </section>
 
       <section className="hobby-ribbon" id="everyday">
-        <p className="eyebrow">Everyday</p>
-        <h2>Not everything needs a portfolio case study.</h2>
+        <p className="eyebrow">Beyond the screen</p>
+        <h2>Cooking, movement, machines, and a good story.</h2>
         <div className="hobby-board">
           {personalProfile.hobbies.map((hobby) => (
             <article
@@ -588,8 +589,8 @@ const App = () => {
         id="entertainment"
       >
         <div className="section-copy">
-          <p className="eyebrow">Entertainment</p>
-          <h2>Movies, series, and games.</h2>
+          <p className="eyebrow">What keeps me entertained</p>
+          <h2>Mysteries, strategy, comedy, and worlds to explore.</h2>
           <p>Stories, screens, and play—the lighter side of the collection.</p>
         </div>
         <article className="entertainment-collection movie-collection">
@@ -674,11 +675,11 @@ const App = () => {
 
       <section className="library-shelf" id="library">
         <div className="section-copy">
-          <p className="eyebrow">Ideas &amp; Real Life</p>
-          <h2>The serious collection.</h2>
+          <p className="eyebrow">Ideas that stay with me</p>
+          <h2>What I read and watch to understand the world.</h2>
           <p>
-            Books, lectures, programs, and documentaries for learning and
-            reflection.
+            My shelf moves across faith, politics, history, society, economics,
+            and personal growth.
           </p>
         </div>
         <div className="classified-shelves">

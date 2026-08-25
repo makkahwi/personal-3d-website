@@ -116,22 +116,22 @@ export type NineChoiceGroup = {
 export const personalProfile = {
   site: {
     title: "Personal 3D Website",
-    scope: "Non-professional life aspects",
+    scope: "From Makkah to Kuala Lumpur to Amman",
     description:
       "A personal, non-professional 3D website centered on hobbies, places, media, and everyday interests.",
   },
 
   nineChoices: {
     title: "9",
-    label: "Three aspects. Three choices each.",
+    label: "Three life paths. Three chapters in each.",
     summary:
-      "A personal identity system built around study, work, and place: three major life areas, each shaped by three different choices.",
+      "The number 9 maps my story across three life paths—study, work, and place—with three defining chapters in each.",
     groups: [
       {
         id: "study",
         label: "Study",
         summary:
-          "The academic route moved from a political interest, through engineering, then settled in computer science.",
+          "My academic route moved from an interest in politics, through engineering, and finally to computer science.",
         choices: [
           {
             id: "political-sciences-plan",
@@ -142,7 +142,7 @@ export const personalProfile = {
           {
             id: "engineering",
             label: "Engineering",
-            detail: "Spent three semesters in engineering before switching.",
+            detail: "I spent three semesters in engineering before switching.",
             outcome: "3 semesters",
           },
           {
@@ -157,7 +157,7 @@ export const personalProfile = {
         id: "career",
         label: "Career",
         summary:
-          "The professional path moved through administration and finance, visual design, then web development.",
+          "My professional path moved through administration and finance, visual design, and then web development.",
         choices: [
           {
             id: "secretariat-financial-management",
@@ -176,7 +176,7 @@ export const personalProfile = {
           {
             id: "web-development",
             label: "Web development",
-            detail: "Current professional field.",
+            detail: "I currently work in web development.",
             outcome: "2018-current",
           },
         ],
@@ -185,22 +185,22 @@ export const personalProfile = {
         id: "stays",
         label: "Stays",
         summary:
-          "The place story is anchored by three homes or meaningful stays: Makkah, Kuala Lumpur, and Amman.",
+          "My story of place is anchored by three homes: Makkah, Kuala Lumpur, and Amman.",
         choices: [
           {
             id: "makkah",
             label: "Makkah",
-            detail: "One of the three core places in the personal map.",
+            detail: "Makkah is one of the three places that shaped me.",
           },
           {
             id: "kuala-lumpur",
             label: "Kuala Lumpur",
-            detail: "One of the three core places in the personal map.",
+            detail: "Kuala Lumpur is one of the three places that shaped me.",
           },
           {
             id: "amman",
             label: "Amman",
-            detail: "One of the three core places in the personal map.",
+            detail: "Amman is one of the three places that shaped me.",
           },
         ],
       },
@@ -208,7 +208,7 @@ export const personalProfile = {
   },
 
   professionalBackground: {
-    note: "Included as life context only; this website is personal and non-professional in focus.",
+    note: "I include my work history only as life context; this website focuses on my personal story.",
     phases: [
       {
         id: "secretariat-financial-management",
@@ -240,7 +240,7 @@ export const personalProfile = {
       label: "Original degree plan",
       field: "Political sciences",
       status: "planned",
-      note: "Originally planned before switching academic direction.",
+      note: "I originally planned to study political science before changing direction.",
     },
     {
       id: "engineering",
@@ -248,7 +248,7 @@ export const personalProfile = {
       field: "Engineering",
       status: "switched",
       duration: "3 semesters",
-      note: "Switched after spending three semesters in engineering.",
+      note: "I changed direction after spending three semesters in engineering.",
     },
     {
       id: "computer-science",
@@ -780,53 +780,53 @@ export const personalProfile = {
           "https://static.tvmaze.com/uploads/images/original_untouched/297/742636.jpg",
       },
     ] satisfies CulturalItem[],
-    note: "Titles to be filled from the owner's actual read/watch history; keep this list factual and curated.",
+    note: "I keep this as a factual, curated record of what I have read and watched.",
   },
 
   socialMedia: {
     generalNote:
-      "Has Facebook, Instagram, and SoundCloud accounts, but has not really followed or engaged with social media for years.",
+      "I have Facebook, Instagram, and SoundCloud accounts, but I have not actively engaged with social media for years.",
     accounts: [
       {
         id: "facebook",
         platform: "Facebook",
         engagement: "inactive",
         link: "https://www.facebook.com/makkahwi",
-        note: "Account exists; not really followed or engaged with for years.",
+        note: "I have not actively used or engaged with this account for years.",
       },
       {
         id: "instagram",
         platform: "Instagram",
         engagement: "inactive",
         link: "https://www.instagram.com/makkahwi",
-        note: "Account exists; not really followed or engaged with for years.",
+        note: "I have not actively used or engaged with this account for years.",
       },
       {
         id: "soundcloud",
         platform: "SoundCloud",
         engagement: "inactive",
         link: "https://soundcloud.com/makkahwi",
-        note: "Account exists & updated occasionally.",
+        note: "I update this account occasionally.",
       },
     ] satisfies SocialAccount[],
   },
 
   healthyLifestyle: {
     summary:
-      "Long-term personal care around fasting, sleep, diet, nutrition, weight, and movement.",
+      "I care for my health through long-term habits around fasting, sleep, nutrition, weight, and movement.",
     items: [
       {
         id: "monday-thursday-fasting",
         label: "Mon and Thu fasting",
         fromYear: 2012,
         toYear: "current",
-        note: "Has been fasting Mon and Thu since 2012.",
+        note: "I have been fasting on Mondays and Thursdays since 2012.",
         visualHint: "fasting",
       },
       {
         id: "early-sleep",
         label: "Early sleep routine",
-        note: "Sleeps and gets up early as part of daily lifestyle care.",
+        note: "I sleep and wake up early as part of my daily routine.",
         visualHint: "sleep",
       },
       {
@@ -834,7 +834,7 @@ export const personalProfile = {
         label: "Reduced sugar consumption",
         fromYear: 2015,
         toYear: "current",
-        note: "Reduced sugar consumption from 2015.",
+        note: "I have reduced my sugar consumption since 2015.",
         visualHint: "sugar",
       },
       {
@@ -842,7 +842,7 @@ export const personalProfile = {
         label: "Adjusted vegan diet",
         fromYear: 2019,
         toYear: 2023,
-        note: "Followed an adjusted vegan diet from 2019 to 2023.",
+        note: "I followed an adjusted vegan diet from 2019 to 2023.",
         visualHint: "vegan",
       },
       {
@@ -850,7 +850,7 @@ export const personalProfile = {
         label: "Weekly nutritionist visits",
         fromYear: 2024,
         toYear: "current",
-        note: "Has been visiting a nutritionist weekly since 2024.",
+        note: "I have been visiting a nutritionist weekly since 2024.",
         visualHint: "nutritionist",
       },
       {
@@ -858,21 +858,21 @@ export const personalProfile = {
         label: "Almost 30 kg lost",
         fromYear: 2024,
         toYear: "current",
-        note: "Lost almost 30 kg through health and nutrition care.",
+        note: "I have lost almost 30 kg through consistent health and nutrition care.",
         visualHint: "weight-loss",
       },
       {
         id: "alternate-day-walking",
         label: "Walking exercise",
         cadence: "Alternate days",
-        note: "Does walking exercise on alternate days.",
+        note: "I walk for exercise on alternate days.",
         visualHint: "walking",
       },
       {
         id: "reduced-Stimulants",
         label: "Reduced stimulants",
         cadence: "No more than 1 cup of green tea per day",
-        note: "Has reduced consumption of stimulants.",
+        note: "I have reduced my stimulant consumption.",
         visualHint: "stimulants",
       },
     ] satisfies HealthyLifestyleItem[],
