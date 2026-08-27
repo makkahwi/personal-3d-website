@@ -2,6 +2,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as React from "react";
 import * as THREE from "three";
 
+import photo from "./assets/profile.jpg";
 import { personalProfile } from "./data/personalProfile";
 
 import "./App.css";
@@ -469,8 +470,9 @@ const App = () => {
               role="img"
               aria-label="Profile photo placeholder"
             >
-              <span>your photo</span>
+              <img src={photo} alt="Profile photo" />
             </div>
+
             <div className="profile-copy">
               <span className="profile-kicker">Hello, I am</span>
               <h2>Suhaib</h2>
