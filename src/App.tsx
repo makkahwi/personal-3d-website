@@ -218,9 +218,24 @@ const PlayfulOrbit = () => {
 const CameraDrift = () => {
   useFrame((state) => {
     const time = state.clock.elapsedTime;
-    state.camera.position.x = Math.sin(time * 0.12) * 0.24;
-    state.camera.position.y = Math.cos(time * 0.16) * 0.18;
-    state.camera.lookAt(0, 0, 0);
+    const pageProgress = Number(
+      getComputedStyle(document.documentElement).getPropertyValue("--scroll-progress"),
+    ) || 0;
+    const targetX = state.pointer.x * 0.65 + Math.sin(time * 0.12) * 0.18;
+    const targetY = state.pointer.y * 0.38 + Math.cos(time * 0.16) * 0.12;
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, 0.035);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, 0.035);
+    state.camera.position.z = THREE.MathUtils.lerp(
+      state.camera.position.z,
+      8 + Math.sin(pageProgress * Math.PI * 4) * 0.7,
+      0.025,
+    );
+    state.camera.rotation.z = THREE.MathUtils.lerp(
+      state.camera.rotation.z,
+      (pageProgress - 0.5) * 0.035,
+      0.025,
+    );
+    state.camera.lookAt(0, pageProgress * -0.35, 0);
   });
   return null;
 };
@@ -364,6 +379,126 @@ const toShelfItem = (item: {
   posterImage: item.posterImage,
 });
 
+const ExperienceLayer = () => {
+  const [activeSection, setActiveSection] = React.useState("top");
+  const [cursorLabel, setCursorLabel] = React.useState("");
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateScroll = () => {
+      const distance = root.scrollHeight - window.innerHeight;
+      root.style.setProperty(
+        "--scroll-progress",
+        String(distance > 0 ? window.scrollY / distance : 0),
+      );
+    };
+    const updatePointer = (event: PointerEvent) => {
+      root.style.setProperty("--pointer-x", `${event.clientX}px`);
+      root.style.setProperty("--pointer-y", `${event.clientY}px`);
+      root.style.setProperty("--scene-x", `${event.clientX / window.innerWidth - 0.5}`);
+      root.style.setProperty("--scene-y", `${event.clientY / window.innerHeight - 0.5}`);
+    };
+    const interactiveSelector = "a, button, .identity-card, .hobby-board article, .lifestyle-node, .lifestyle-feature";
+    const updateCursorState = (event: PointerEvent) => {
+      const target = (event.target as HTMLElement).closest(interactiveSelector);
+      setCursorLabel(target ? (target.matches("a, button") ? "Open" : "Explore") : "");
+    };
+    const tiltItems = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".identity-card, .hobby-board article, .lifestyle-node, .lifestyle-feature, .poster-run a, .shelf-line a",
+      ),
+    );
+    const tilt = (event: PointerEvent) => {
+      const card = event.currentTarget as HTMLElement;
+      const rect = card.getBoundingClientRect();
+      const rx = ((event.clientY - rect.top) / rect.height - 0.5) * -5;
+      const ry = ((event.clientX - rect.left) / rect.width - 0.5) * 7;
+      card.style.setProperty("--tilt-x", `${rx}deg`);
+      card.style.setProperty("--tilt-y", `${ry}deg`);
+      card.style.setProperty("--glow-x", `${event.clientX - rect.left}px`);
+      card.style.setProperty("--glow-y", `${event.clientY - rect.top}px`);
+    };
+    const resetTilt = (event: PointerEvent) => {
+      const card = event.currentTarget as HTMLElement;
+      card.style.setProperty("--tilt-x", "0deg");
+      card.style.setProperty("--tilt-y", "0deg");
+    };
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>("main > section[id]"),
+    );
+    const revealItems = document.querySelectorAll<HTMLElement>(
+      "section > header, section > .section-copy, .identity-card, .hobby-board article, .lifestyle-feature, .lifestyle-node, .entertainment-collection, .media-shelf",
+    );
+    revealItems.forEach((item) => item.classList.add("reveal-item"));
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add("is-visible");
+        });
+      },
+      { threshold: 0.12 },
+    );
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const current = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (current) {
+          const id = (current.target as HTMLElement).id;
+          setActiveSection(id);
+          const accents: Record<string, string> = {
+            top: "#ff477e", story: "#7657e8", everyday: "#04a777",
+            entertainment: "#6847d9", library: "#168aad",
+          };
+          root.style.setProperty("--chapter-accent", accents[id] || "#ff477e");
+        }
+      },
+      { rootMargin: "-35% 0px -50%", threshold: [0, 0.2, 0.6] },
+    );
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+    sections.forEach((section) => sectionObserver.observe(section));
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    if (!reduceMotion.matches) {
+      window.addEventListener("pointermove", updatePointer, { passive: true });
+      document.addEventListener("pointerover", updateCursorState, { passive: true });
+      tiltItems.forEach((item) => {
+        item.addEventListener("pointermove", tilt);
+        item.addEventListener("pointerleave", resetTilt);
+      });
+    }
+    return () => {
+      revealObserver.disconnect();
+      sectionObserver.disconnect();
+      window.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("pointermove", updatePointer);
+      document.removeEventListener("pointerover", updateCursorState);
+      tiltItems.forEach((item) => {
+        item.removeEventListener("pointermove", tilt);
+        item.removeEventListener("pointerleave", resetTilt);
+      });
+    };
+  }, []);
+
+  return (
+    <>
+      <div className="scroll-progress" aria-hidden="true" />
+      <div className="ambient-cursor" aria-hidden="true" />
+      <div className={`live-cursor ${cursorLabel ? "is-active" : ""}`} aria-hidden="true">
+        {cursorLabel}
+      </div>
+      <div className="chapter-indicator" aria-hidden="true">
+        <span>{activeSection === "top" ? "00" : activeSection === "story" ? "01" : activeSection === "everyday" ? "02" : activeSection === "entertainment" ? "03" : "04"}</span>
+        <i />
+        <strong>{activeSection}</strong>
+      </div>
+    </>
+  );
+};
+
 const App = () => {
   const library = personalProfile.culturalLibrary;
   const movieLinks = library.movies.map((movie) => ({
@@ -437,6 +572,7 @@ const App = () => {
   return (
     <main className="landing-page">
       <Stage />
+      <ExperienceLayer />
 
       <nav className="site-nav" aria-label="Main navigation">
         <a className="nav-mark" href="#top" aria-label="Back to top">
@@ -462,6 +598,10 @@ const App = () => {
                 Three life paths. Three chapters in each. Together, they make
                 nine.
               </p>
+              <a className="enter-link" href="#story">
+                <span>Begin the journey</span>
+                <b aria-hidden="true">↘</b>
+              </a>
             </div>
           </div>
           <div className="profile-card">
@@ -488,6 +628,13 @@ const App = () => {
           </div>
         </div>
       </section>
+
+      <div className="motion-ticker" aria-hidden="true">
+        <div>
+          <span>STUDY</span><i>✦</i><span>WORK</span><i>✦</i><span>PLACE</span><i>✦</i>
+          <span>STUDY</span><i>✦</i><span>WORK</span><i>✦</i><span>PLACE</span><i>✦</i>
+        </div>
+      </div>
 
       <section className="identity-map" id="story">
         <header className="identity-heading">
