@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as React from "react";
 import * as THREE from "three";
 
@@ -28,7 +28,7 @@ const FloatingGlobe = ({
   return (
     <group ref={ref} position={position}>
       <mesh>
-        <sphereGeometry args={[1.15, 48, 32]} />
+        <sphereGeometry args={[1.15, 24, 16]} />
         <meshStandardMaterial
           color="#0f766e"
           emissive="#0d9488"
@@ -48,7 +48,7 @@ const FloatingGlobe = ({
               Math.sin(angle) * 1.85,
             ]}
           >
-            <sphereGeometry args={[0.065, 16, 12]} />
+            <sphereGeometry args={[0.065, 8, 6]} />
             <meshStandardMaterial
               color="#facc15"
               emissive="#f59e0b"
@@ -199,9 +199,9 @@ const PlayfulOrbit = () => {
             rotation={[angle, angle * 0.5, 0]}
           >
             {index % 3 === 0 ? (
-              <torusGeometry args={[0.09, 0.025, 8, 18]} />
+              <torusGeometry args={[0.09, 0.025, 6, 10]} />
             ) : (
-              <sphereGeometry args={[0.045 + (index % 4) * 0.012, 12, 8]} />
+              <sphereGeometry args={[0.045 + (index % 4) * 0.012, 8, 6]} />
             )}
             <meshStandardMaterial
               color={colors[index % colors.length]}
@@ -216,11 +216,22 @@ const PlayfulOrbit = () => {
 };
 
 const CameraDrift = () => {
+  const scrollProgress = React.useRef(0);
+
+  React.useEffect(() => {
+    const update = () => {
+      const root = document.documentElement;
+      const distance = root.scrollHeight - window.innerHeight;
+      scrollProgress.current = distance > 0 ? window.scrollY / distance : 0;
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+
   useFrame((state) => {
     const time = state.clock.elapsedTime;
-    const pageProgress = Number(
-      getComputedStyle(document.documentElement).getPropertyValue("--scroll-progress"),
-    ) || 0;
+    const pageProgress = scrollProgress.current;
     const targetX = state.pointer.x * 0.65 + Math.sin(time * 0.12) * 0.18;
     const targetY = state.pointer.y * 0.38 + Math.cos(time * 0.16) * 0.12;
     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, 0.035);
@@ -240,22 +251,88 @@ const CameraDrift = () => {
   return null;
 };
 
+// A decorative background does not need to render at the display's full refresh
+// rate. Demand rendering keeps laptops and high-refresh screens substantially cooler.
+const FrameLimiter = () => {
+  const invalidate = useThree((state) => state.invalidate);
+
+  React.useEffect(() => {
+    let timer = 0;
+    const schedule = () => {
+      window.clearTimeout(timer);
+      if (!document.hidden) {
+        timer = window.setTimeout(() => {
+          invalidate();
+          schedule();
+        }, 1000 / 30);
+      }
+    };
+    const handleVisibility = () => schedule();
+    document.addEventListener("visibilitychange", handleVisibility);
+    schedule();
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.clearTimeout(timer);
+    };
+  }, [invalidate]);
+
+  return null;
+};
+
+const ScrollComposition = () => {
+  const group = React.useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (!group.current) return;
+    const distance = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = distance > 0 ? window.scrollY / distance : 0;
+    const chapter = progress * Math.PI * 4;
+
+    group.current.position.x = THREE.MathUtils.lerp(
+      group.current.position.x,
+      Math.sin(chapter) * 0.85,
+      0.06,
+    );
+    group.current.position.y = THREE.MathUtils.lerp(
+      group.current.position.y,
+      Math.cos(chapter * 0.72) * 0.45,
+      0.06,
+    );
+    group.current.rotation.z = THREE.MathUtils.lerp(
+      group.current.rotation.z,
+      Math.sin(chapter * 0.5) * 0.055,
+      0.05,
+    );
+  });
+
+  return (
+    <group ref={group}>
+      <PlayfulOrbit />
+      <FloatingGlobe position={[3.25, 1.55, 0]} />
+      <ChoiceObject position={[-3.9, -1.05, -0.4]} />
+      <CinemaObject position={[3.25, -1.9, -0.3]} />
+      <BooksObject position={[-3.8, 2.15, -0.6]} />
+    </group>
+  );
+};
+
 const Stage = () => (
   <div className="stage" aria-hidden="true">
-    <Canvas camera={{ position: [0, 0, 8], fov: 42 }}>
+    <Canvas
+      camera={{ position: [0, 0, 8], fov: 42 }}
+      dpr={[1, 1.25]}
+      frameloop="demand"
+      gl={{ antialias: false, powerPreference: "low-power", stencil: false }}
+    >
+      <FrameLimiter />
       <color attach="background" args={["#f7f4ff"]} />
       <fog attach="fog" args={["#f7f4ff", 9, 18]} />
       <ambientLight intensity={1.15} />
       <hemisphereLight args={["#ffffff", "#ddd6fe", 1.5]} />
       <pointLight position={[-4, 3, 5]} intensity={3.2} color="#22d3ee" />
       <pointLight position={[5, -1, 3]} intensity={2.4} color="#fb7185" />
-      <pointLight position={[0, 5, 1]} intensity={1.8} color="#facc15" />
       <CameraDrift />
-      <PlayfulOrbit />
-      <FloatingGlobe position={[3.25, 1.55, 0]} />
-      <ChoiceObject position={[-3.9, -1.05, -0.4]} />
-      <CinemaObject position={[3.25, -1.9, -0.3]} />
-      <BooksObject position={[-3.8, 2.15, -0.6]} />
+      <ScrollComposition />
     </Canvas>
   </div>
 );

@@ -2006,9 +2006,9 @@ body {
 }
 
 .stage {
-  position: absolute;
+  position: fixed;
   height: 100vh;
-  opacity: 0.76;
+  opacity: 0.68;
 }
 
 .hero {
@@ -2167,19 +2167,19 @@ body {
 }
 
 .identity-map {
-  background: #fff8df;
+  background: rgba(255, 248, 223, 0.91);
 }
 .hobby-ribbon {
-  background: #e7fbf6;
+  background: rgba(231, 251, 246, 0.91);
 }
 .healthy-lifestyle {
-  background: #fff0f5;
+  background: rgba(255, 240, 245, 0.91);
 }
 .cinema-wall {
-  background: #eeeaff;
+  background: rgba(238, 234, 255, 0.91);
 }
 .library-shelf {
-  background: #eaf7ff;
+  background: rgba(234, 247, 255, 0.91);
 }
 .future-board {
   background: #fff7e8;
