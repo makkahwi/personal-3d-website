@@ -381,7 +381,7 @@ export const personalProfile = {
     },
     {
       id: "pc",
-      label: "PC",
+      label: "Coding",
       category: "technology",
       sceneObjectId: "pc-module",
       image:
@@ -414,15 +414,6 @@ export const personalProfile = {
       image:
         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
       visualHint: "Walking path",
-    },
-    {
-      id: "volleyball",
-      label: "Volleyball",
-      category: "sports",
-      sceneObjectId: "volleyball-court",
-      image:
-        "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=900&q=80",
-      visualHint: "Volleyball court",
     },
     {
       id: "movies",
@@ -818,9 +809,9 @@ export const personalProfile = {
       {
         id: "monday-thursday-fasting",
         label: "Mon and Thu fasting",
-        fromYear: 2012,
+        fromYear: 2011,
         toYear: "current",
-        note: "I have been fasting on Mondays and Thursdays since 2012.",
+        note: "I have been fasting on Mondays and Thursdays since 2011.",
         visualHint: "fasting",
       },
       {
