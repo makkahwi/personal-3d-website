@@ -779,11 +779,11 @@ export const personalProfile = {
       "I have Facebook, Instagram, and SoundCloud accounts, but I have not actively engaged with social media for years.",
     accounts: [
       {
-        id: "facebook",
-        platform: "Facebook",
-        engagement: "inactive",
-        link: "https://www.facebook.com/makkahwi",
-        note: "I have not actively used or engaged with this account for years.",
+        id: "whatsapp",
+        platform: "Whatsapp",
+        engagement: "active",
+        link: "https://wasap.my/962788424973",
+        note: "I'm really into messaging on whatsapp way more than calling.",
       },
       {
         id: "instagram",
@@ -798,6 +798,13 @@ export const personalProfile = {
         engagement: "inactive",
         link: "https://soundcloud.com/makkahwi",
         note: "I update this account occasionally.",
+      },
+      {
+        id: "email",
+        platform: "Email",
+        engagement: "inactive",
+        link: "SuhaibAhmadAi@hotmail.com",
+        note: "Inactive but I would still be notified",
       },
     ] satisfies SocialAccount[],
   },
