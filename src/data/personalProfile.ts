@@ -72,7 +72,7 @@ export type CulturalItem = {
 
 export type SocialAccount = {
   id: string;
-  platform: "Facebook" | "Instagram" | "SoundCloud";
+  platform: "Facebook" | "Instagram" | "SoundCloud" | "Whatsapp" | "Email";
   handle?: string;
   link?: string;
   engagement: "inactive" | "low" | "active";
