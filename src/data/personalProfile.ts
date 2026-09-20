@@ -786,6 +786,13 @@ export const personalProfile = {
         note: "I'm really into messaging on whatsapp way more than calling.",
       },
       {
+        id: "facebook",
+        platform: "Facebook",
+        engagement: "inactive",
+        link: "https://www.facebook.com/makkahwi",
+        note: "I have not actively used or engaged with this account for years.",
+      },
+      {
         id: "instagram",
         platform: "Instagram",
         engagement: "inactive",
