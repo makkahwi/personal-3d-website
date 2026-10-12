@@ -743,6 +743,11 @@ export const personalProfile = {
       },
       {
         id: "",
+        title: "Black Mirror",
+        posterImage: "https://static.tvmaze.com/uploads/images/original_untouched/564/1411764.jpg",
+      },
+      {
+        id: "",
         title: "The Mentalist",
         posterImage:
           "https://static.tvmaze.com/uploads/images/original_untouched/0/1239.jpg",
@@ -752,11 +757,6 @@ export const personalProfile = {
         title: "ضيعة ضايعة",
         posterImage:
           "https://upload.wikimedia.org/wikipedia/ar/b/b5/%D9%84%D9%82%D8%B7%D8%A9_%D8%B4%D8%A7%D8%B1%D8%A9_%D9%85%D8%B3%D9%84%D8%B3%D9%84_%D8%B6%D9%8A%D8%B9%D8%A9_%D8%B6%D8%A7%D9%8A%D8%B9%D8%A9.jpeg?utm_source=ar.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-      },
-      {
-        id: "",
-        title: "الخربة",
-        posterImage: "https://i.ibb.co/MkWs0C6/image.jpg",
       },
       {
         id: "",
